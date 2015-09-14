@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Note.h"
 
 @interface NotesDetailViewController : UIViewController
+
+@property (nonatomic, strong, readonly) Note *note;
+
+- (instancetype)initWithNote:(Note *)note;
 
 @end

@@ -7,6 +7,11 @@
 //
 
 #import "NotesListViewController.h"
+#import "NotesManager.h"
+#import "NotesTableViewCell.h"
+#import "NotesDetailViewController.h"
+
+#define CELL_ID @"cell"
 
 @interface NotesListViewController () //<UISplitViewControllerDelegate>
 
@@ -17,7 +22,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-//        self.splitViewController.delegate = self;
+
     }
     return self;
 }
@@ -29,13 +34,27 @@
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
+    [self.tableView registerClass:[NotesTableViewCell class] forCellReuseIdentifier:CELL_ID];
+    
     self.navigationItem.title = NSLocalizedString(@"BlocNotes", @"BlocNotes");
 }
 
-#pragma mark - UISplitViewControllerDelegate
+#pragma mark - UITableViewController DataSource
 
-//- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
-//    return YES;
-//}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [[NotesManager datasource] countNotes];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    Note *note = [[NotesManager datasource] noteAtIndex:indexPath.row];
+    NotesDetailViewController *detailVC = [[NotesDetailViewController alloc] initWithNote:note];
+    [self.splitViewController showDetailViewController:detailVC sender:self];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NotesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_ID forIndexPath:indexPath];
+    cell.note = [[NotesManager datasource] noteAtIndex:indexPath.row];
+    return cell;
+}
 
 @end

@@ -12,10 +12,16 @@
 		9AFB64821BA68B6C0017D5F2 /* BlocNotes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64801BA68B6C0017D5F2 /* BlocNotes.xcdatamodeld */; };
 		9AFB648A1BA68B6C0017D5F2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AFB64891BA68B6C0017D5F2 /* Images.xcassets */; };
 		9AFB648D1BA68B6C0017D5F2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9AFB648B1BA68B6C0017D5F2 /* LaunchScreen.xib */; };
-		9AFB64991BA68B6C0017D5F2 /* BlocNotesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64981BA68B6C0017D5F2 /* BlocNotesTests.m */; };
 		9AFB64A51BA6901B0017D5F2 /* NotesListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64A41BA6901B0017D5F2 /* NotesListViewController.m */; };
 		9AFB64A81BA690330017D5F2 /* NotesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64A71BA690330017D5F2 /* NotesDetailViewController.m */; };
 		9AFB64AB1BA699C80017D5F2 /* NotesSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64AA1BA699C80017D5F2 /* NotesSplitViewController.m */; };
+		9AFB64AF1BA71E550017D5F2 /* Note.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64AE1BA71E550017D5F2 /* Note.m */; };
+		9AFB64B31BA72F590017D5F2 /* InMemoryDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64B21BA72F590017D5F2 /* InMemoryDatasource.m */; };
+		9AFB64B71BA732F80017D5F2 /* notes.json in Resources */ = {isa = PBXBuildFile; fileRef = 9AFB64B61BA732F80017D5F2 /* notes.json */; };
+		9AFB64B91BA739490017D5F2 /* InMemoryDatasourceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64B81BA739490017D5F2 /* InMemoryDatasourceTests.m */; };
+		9AFB64BB1BA73BED0017D5F2 /* NoteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64BA1BA73BED0017D5F2 /* NoteTests.m */; };
+		9AFB64BE1BA73D770017D5F2 /* NotesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64BD1BA73D770017D5F2 /* NotesManager.m */; };
+		9AFB64C21BA73ED70017D5F2 /* NotesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,13 +45,24 @@
 		9AFB648C1BA68B6C0017D5F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		9AFB64921BA68B6C0017D5F2 /* BlocNotesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlocNotesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AFB64971BA68B6C0017D5F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9AFB64981BA68B6C0017D5F2 /* BlocNotesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlocNotesTests.m; sourceTree = "<group>"; };
 		9AFB64A31BA6901B0017D5F2 /* NotesListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesListViewController.h; sourceTree = "<group>"; };
 		9AFB64A41BA6901B0017D5F2 /* NotesListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesListViewController.m; sourceTree = "<group>"; };
 		9AFB64A61BA690330017D5F2 /* NotesDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesDetailViewController.h; sourceTree = "<group>"; };
 		9AFB64A71BA690330017D5F2 /* NotesDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesDetailViewController.m; sourceTree = "<group>"; };
 		9AFB64A91BA699C80017D5F2 /* NotesSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesSplitViewController.h; sourceTree = "<group>"; };
 		9AFB64AA1BA699C80017D5F2 /* NotesSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesSplitViewController.m; sourceTree = "<group>"; };
+		9AFB64AD1BA71E550017D5F2 /* Note.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Note.h; sourceTree = "<group>"; };
+		9AFB64AE1BA71E550017D5F2 /* Note.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Note.m; sourceTree = "<group>"; };
+		9AFB64B11BA72F590017D5F2 /* InMemoryDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InMemoryDatasource.h; sourceTree = "<group>"; };
+		9AFB64B21BA72F590017D5F2 /* InMemoryDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InMemoryDatasource.m; sourceTree = "<group>"; };
+		9AFB64B41BA72F9E0017D5F2 /* NotesDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesDatasource.h; sourceTree = "<group>"; };
+		9AFB64B61BA732F80017D5F2 /* notes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notes.json; sourceTree = "<group>"; };
+		9AFB64B81BA739490017D5F2 /* InMemoryDatasourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InMemoryDatasourceTests.m; sourceTree = "<group>"; };
+		9AFB64BA1BA73BED0017D5F2 /* NoteTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoteTests.m; sourceTree = "<group>"; };
+		9AFB64BC1BA73D770017D5F2 /* NotesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesManager.h; sourceTree = "<group>"; };
+		9AFB64BD1BA73D770017D5F2 /* NotesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesManager.m; sourceTree = "<group>"; };
+		9AFB64C01BA73ED70017D5F2 /* NotesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesTableViewCell.h; sourceTree = "<group>"; };
+		9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesTableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +104,10 @@
 		9AFB64781BA68B6C0017D5F2 /* BlocNotes */ = {
 			isa = PBXGroup;
 			children = (
+				9AFB64BF1BA73EBE0017D5F2 /* View */,
+				9AFB64B51BA732CB0017D5F2 /* Resource */,
+				9AFB64B01BA72F300017D5F2 /* Datasource */,
+				9AFB64AC1BA71E410017D5F2 /* Model */,
 				9AFB64A21BA68F5C0017D5F2 /* ViewController */,
 				9AFB647D1BA68B6C0017D5F2 /* AppDelegate.h */,
 				9AFB647E1BA68B6C0017D5F2 /* AppDelegate.m */,
@@ -110,8 +131,9 @@
 		9AFB64951BA68B6C0017D5F2 /* BlocNotesTests */ = {
 			isa = PBXGroup;
 			children = (
-				9AFB64981BA68B6C0017D5F2 /* BlocNotesTests.m */,
 				9AFB64961BA68B6C0017D5F2 /* Supporting Files */,
+				9AFB64B81BA739490017D5F2 /* InMemoryDatasourceTests.m */,
+				9AFB64BA1BA73BED0017D5F2 /* NoteTests.m */,
 			);
 			path = BlocNotesTests;
 			sourceTree = "<group>";
@@ -135,6 +157,44 @@
 				9AFB64AA1BA699C80017D5F2 /* NotesSplitViewController.m */,
 			);
 			name = ViewController;
+			sourceTree = "<group>";
+		};
+		9AFB64AC1BA71E410017D5F2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9AFB64AD1BA71E550017D5F2 /* Note.h */,
+				9AFB64AE1BA71E550017D5F2 /* Note.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		9AFB64B01BA72F300017D5F2 /* Datasource */ = {
+			isa = PBXGroup;
+			children = (
+				9AFB64B11BA72F590017D5F2 /* InMemoryDatasource.h */,
+				9AFB64B21BA72F590017D5F2 /* InMemoryDatasource.m */,
+				9AFB64B41BA72F9E0017D5F2 /* NotesDatasource.h */,
+				9AFB64BC1BA73D770017D5F2 /* NotesManager.h */,
+				9AFB64BD1BA73D770017D5F2 /* NotesManager.m */,
+			);
+			name = Datasource;
+			sourceTree = "<group>";
+		};
+		9AFB64B51BA732CB0017D5F2 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				9AFB64B61BA732F80017D5F2 /* notes.json */,
+			);
+			name = Resource;
+			sourceTree = "<group>";
+		};
+		9AFB64BF1BA73EBE0017D5F2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				9AFB64C01BA73ED70017D5F2 /* NotesTableViewCell.h */,
+				9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */,
+			);
+			name = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,6 +279,7 @@
 			files = (
 				9AFB648D1BA68B6C0017D5F2 /* LaunchScreen.xib in Resources */,
 				9AFB648A1BA68B6C0017D5F2 /* Images.xcassets in Resources */,
+				9AFB64B71BA732F80017D5F2 /* notes.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,10 +298,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				9AFB647F1BA68B6C0017D5F2 /* AppDelegate.m in Sources */,
+				9AFB64BE1BA73D770017D5F2 /* NotesManager.m in Sources */,
 				9AFB64AB1BA699C80017D5F2 /* NotesSplitViewController.m in Sources */,
+				9AFB64B31BA72F590017D5F2 /* InMemoryDatasource.m in Sources */,
 				9AFB64821BA68B6C0017D5F2 /* BlocNotes.xcdatamodeld in Sources */,
 				9AFB64A51BA6901B0017D5F2 /* NotesListViewController.m in Sources */,
 				9AFB647C1BA68B6C0017D5F2 /* main.m in Sources */,
+				9AFB64C21BA73ED70017D5F2 /* NotesTableViewCell.m in Sources */,
+				9AFB64AF1BA71E550017D5F2 /* Note.m in Sources */,
 				9AFB64A81BA690330017D5F2 /* NotesDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,7 +314,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9AFB64991BA68B6C0017D5F2 /* BlocNotesTests.m in Sources */,
+				9AFB64BB1BA73BED0017D5F2 /* NoteTests.m in Sources */,
+				9AFB64B91BA739490017D5F2 /* InMemoryDatasourceTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
