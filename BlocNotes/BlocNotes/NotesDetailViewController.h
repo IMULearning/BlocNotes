@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  NotesDetailViewController.h
 //  BlocNotes
 //
 //  Created by Weinan Qiu on 2015-09-14.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface NotesDetailViewController : UIViewController
 
 @end
-

@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "NotesListViewController.h"
+#import "NotesDetailViewController.h"
+#import "NotesSplitViewController.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +19,13 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    UIViewController *rootViewController = [self createRootViewController];
+    
+    [self.window setRootViewController:rootViewController];
+    [self.window setBackgroundColor:[UIColor whiteColor]];
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
@@ -42,6 +51,20 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [self saveContext];
+}
+
+#pragma mark - View Initialization
+
+- (UIViewController *)createRootViewController {
+    NotesSplitViewController *splitVC = [NotesSplitViewController new];
+    NotesListViewController *listVC = [NotesListViewController new];
+    NotesDetailViewController *detailVC = [NotesDetailViewController new];
+    UINavigationController *listNavVC = [[UINavigationController alloc] initWithRootViewController:listVC];
+    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    [splitVC setViewControllers:@[listNavVC, detailNavVC]];
+    [splitVC setPreferredDisplayMode:UISplitViewControllerDisplayModeAllVisible];
+    
+    return splitVC;
 }
 
 #pragma mark - Core Data stack
