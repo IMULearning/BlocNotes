@@ -48,12 +48,6 @@
     self.navigationItem.rightBarButtonItem = self.createNoteButton;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    NSLog(@"called");
-}
-
 #pragma mark - UITableViewController DataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

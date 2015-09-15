@@ -43,15 +43,6 @@
     [self createUIControls];
 }
 
-- (void)didMoveToParentViewController:(UIViewController *)parent {
-    // popped off the navigation stack.
-//    if (parent.parentViewController == nil) {
-//        if (self.delegate) {
-//            [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
-//        }
-//    }
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     if (self.delegate) {
         [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
@@ -139,10 +130,6 @@
     self.note.content = [self.contentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
     [self.navigationController.navigationController popToRootViewControllerAnimated:YES];
-    if (self.delegate) {
-        [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
-    }
-    
 }
 
 - (void)shareButtonFired:(UIBarButtonItem *)sender {
