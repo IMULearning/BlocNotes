@@ -15,6 +15,10 @@
 
 - (Note *)noteAtIndex:(NSUInteger)index;
 
+- (NSInteger)indexForNote:(Note *)note;
+
+- (Note *)initializeNewNote;
+
 - (BOOL)insertNote:(Note *)newNote;
 
 - (BOOL)updateNote:(Note *)noteToUpdate;

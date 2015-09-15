@@ -84,11 +84,19 @@
     return [_notes objectAtIndex:index];
 }
 
+- (Note *)initializeNewNote {
+    return [Note new];
+}
+
+- (NSInteger)indexForNote:(Note *)note {
+    return [_notes indexOfObject:note];
+}
+
 - (BOOL)insertNote:(Note *)newNote {
     if (!newNote) {
         return NO;
     }
-    [_notes addObject:newNote];
+    [_notes insertObject:newNote atIndex:0];
     return YES;
 }
 

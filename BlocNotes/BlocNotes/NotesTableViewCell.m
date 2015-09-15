@@ -20,18 +20,24 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         [self createAndConfigureDescriptionLabel];
+        [self setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
     }
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.descriptionLabel.frame = self.contentView.bounds;
+    
+    CGRect labelFrame = self.contentView.bounds;
+    labelFrame.origin.x += 20;
+    labelFrame.size.width -= 100;
+    self.descriptionLabel.frame = labelFrame;
 }
 
 - (void)createAndConfigureDescriptionLabel {
     self.descriptionLabel = [UILabel new];
     self.descriptionLabel.numberOfLines = 2;
+    self.descriptionLabel.font = [UIFont boldSystemFontOfSize:17];
     self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:self.descriptionLabel];
 }

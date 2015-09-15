@@ -19,6 +19,14 @@
     return self;
 }
 
+- (NSString *)title {
+    return [_title ? _title : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+- (NSString *)content {
+    return [_content ? _content : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 - (NSString *)description {
     if (self.title && self.title.length > 0) {
         return self.title;
@@ -27,6 +35,10 @@
     } else {
         return NEW_NOTE;
     }
+}
+
+- (BOOL)hasText {
+    return self.title.length > 0 || self.content.length > 0;
 }
 
 @end

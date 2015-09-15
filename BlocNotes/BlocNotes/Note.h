@@ -19,4 +19,6 @@
 
 - (NSString *)description;
 
+- (BOOL)hasText;
+
 @end

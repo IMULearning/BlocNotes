@@ -7,6 +7,8 @@
 //
 
 #import "NotesDetailViewController.h"
+#import <UITextView+Placeholder.h>
+#import "NotesManager.h"
 
 #define TITLE_PLACEHOLDER NSLocalizedString(@"Title of this note", @"Title of this note")
 #define CONTENT_PLACEHOLDER NSLocalizedString(@"Write your note...", @"Write your note...")
@@ -18,6 +20,8 @@
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UIView *separator;
 @property (nonatomic, strong) UITextView *contentTextView;
+@property (nonatomic, strong) UIBarButtonItem *doneButton;
+@property (nonatomic, strong) UIBarButtonItem *shareButton;
 
 @end
 
@@ -33,26 +37,44 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self.view setBackgroundColor:[UIColor whiteColor]];
+    
+    [self setupNavigationBar];
+    [self createUIControls];
+}
+
+- (void)setupNavigationBar {
     self.navigationItem.title = NEW_NOTE;
     
-    [self createUIControls];
-    NSLog(@"called!");
+    self.doneButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", @"Done")
+                                                       style:UIBarButtonItemStyleDone
+                                                      target:self
+                                                      action:@selector(doneFired:)];
+    self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonFired:)];
+    
+    self.navigationItem.rightBarButtonItems = @[self.doneButton, self.shareButton];
+    
+    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)createUIControls {
     self.titleTextField = [UITextField new];
     self.titleTextField.placeholder = TITLE_PLACEHOLDER;
+    if (self.note.title) {
+        self.titleTextField.text = self.note.title;
+    }
     self.titleTextField.delegate = self;
+    
     
     self.separator = [UIView new];
     self.separator.backgroundColor = [UIColor lightGrayColor];
     
     self.contentTextView = [UITextView new];
+    self.contentTextView.placeholder = CONTENT_PLACEHOLDER;
     [self.contentTextView setFont:[UIFont systemFontOfSize:17]];
-    [self.contentTextView setText:CONTENT_PLACEHOLDER];
-    [self.contentTextView setTextColor:[UIColor lightGrayColor]];
+    if (self.note.content) {
+        self.contentTextView.text = self.note.content;
+    }
     self.contentTextView.delegate = self;
     
     for (UIView *view in @[self.titleTextField, self.separator, self.contentTextView]) {
@@ -66,15 +88,15 @@
 - (void)registerAutoLayoutRules {
     NSDictionary *uiControls = NSDictionaryOfVariableBindings(_titleTextField, _separator, _contentTextView);
     
-    NSArray *titleTextHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_titleTextField]-|"
+    NSArray *titleTextHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-24-[_titleTextField]-|"
                                                                                       options:kNilOptions
                                                                                       metrics:nil
                                                                                         views:uiControls];
-    NSArray *separatorHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_separator]|"
+    NSArray *separatorHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-24-[_separator]|"
                                                                                       options:kNilOptions
                                                                                       metrics:nil
                                                                                         views:uiControls];
-    NSArray *contentTextHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_contentTextView]-|"
+    NSArray *contentTextHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-20-[_contentTextView]-|"
                                                                                         options:kNilOptions
                                                                                         metrics:nil
                                                                                           views:uiControls];
@@ -88,7 +110,7 @@
     [super viewWillLayoutSubviews];
     
     NSDictionary *uiControls = NSDictionaryOfVariableBindings(_titleTextField, _separator, _contentTextView);
-    NSString *format = [NSString stringWithFormat:@"V:|-(%f)-[_titleTextField]-[_separator(==1.5)]-[_contentTextView]-|", self.topLayoutGuide.length + 10];
+    NSString *format = [NSString stringWithFormat:@"V:|-(%f)-[_titleTextField(==35)]-[_separator(==1.5)]-[_contentTextView]-|", self.topLayoutGuide.length + 15];
     NSArray *verticalRelationConstraints = [NSLayoutConstraint constraintsWithVisualFormat:format
                                                                                    options:kNilOptions
                                                                                    metrics:nil
@@ -96,21 +118,28 @@
     [self.view addConstraints:verticalRelationConstraints];
 }
 
-#pragma mark - UITextViewDelegate
+#pragma mark - Button Target
 
-- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
-    if ([textView.text isEqualToString:CONTENT_PLACEHOLDER]) {
-        [textView setText:@""];
-        [textView setTextColor:[UIColor blackColor]];
+- (void)doneFired:(UIBarButtonItem *)sender {
+    self.note.title = self.titleTextField.text;
+    self.note.content = self.contentTextView.text;
+    
+    [[NotesManager datasource] updateNote:self.note];
+    
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    if (self.delegate) {
+        [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
     }
-    return YES;
+    
 }
 
-- (void)textViewDidEndEditing:(UITextView *)textView {
-    [textView resignFirstResponder];
-    if ([textView.text isEqualToString:@""]) {
-        [textView setText:CONTENT_PLACEHOLDER];
-        [textView setTextColor:[UIColor lightGrayColor]];
+- (void)shareButtonFired:(UIBarButtonItem *)sender {
+    NSString *formatted = [NSString stringWithFormat:@"%@\n\n%@", self.note.title, self.note.content];
+    NSString *shareText = [formatted stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    if (shareText.length > 0) {
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[shareText] applicationActivities:nil];
+        [self presentViewController:activityVC animated:YES completion:nil];
     }
 }
 

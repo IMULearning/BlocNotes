@@ -22,6 +22,7 @@
 		9AFB64BB1BA73BED0017D5F2 /* NoteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64BA1BA73BED0017D5F2 /* NoteTests.m */; };
 		9AFB64BE1BA73D770017D5F2 /* NotesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64BD1BA73D770017D5F2 /* NotesManager.m */; };
 		9AFB64C21BA73ED70017D5F2 /* NotesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */; };
+		EC4A7A4AC1221832163C33A0 /* libPods-BlocNotes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D2A70BFDCB3CCF60218F74D /* libPods-BlocNotes.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2C907059C5A8EEA338A35698 /* Pods-BlocNotes.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlocNotes.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BlocNotes/Pods-BlocNotes.debug.xcconfig"; sourceTree = "<group>"; };
+		42DE4CA432E23339F48FCCA2 /* Pods-BlocNotes.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlocNotes.release.xcconfig"; path = "Pods/Target Support Files/Pods-BlocNotes/Pods-BlocNotes.release.xcconfig"; sourceTree = "<group>"; };
+		8D2A70BFDCB3CCF60218F74D /* libPods-BlocNotes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BlocNotes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AFB64761BA68B6C0017D5F2 /* BlocNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlocNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AFB647A1BA68B6C0017D5F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9AFB647B1BA68B6C0017D5F2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -70,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC4A7A4AC1221832163C33A0 /* libPods-BlocNotes.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,12 +88,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		444C9D30913714E103A2BE7D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2C907059C5A8EEA338A35698 /* Pods-BlocNotes.debug.xcconfig */,
+				42DE4CA432E23339F48FCCA2 /* Pods-BlocNotes.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		85F8E44FCF4A06C6BDE8BF65 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8D2A70BFDCB3CCF60218F74D /* libPods-BlocNotes.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9AFB646D1BA68B6C0017D5F2 = {
 			isa = PBXGroup;
 			children = (
 				9AFB64781BA68B6C0017D5F2 /* BlocNotes */,
 				9AFB64951BA68B6C0017D5F2 /* BlocNotesTests */,
 				9AFB64771BA68B6C0017D5F2 /* Products */,
+				444C9D30913714E103A2BE7D /* Pods */,
+				85F8E44FCF4A06C6BDE8BF65 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,8 +128,8 @@
 		9AFB64781BA68B6C0017D5F2 /* BlocNotes */ = {
 			isa = PBXGroup;
 			children = (
-				9AFB64BF1BA73EBE0017D5F2 /* View */,
 				9AFB64B51BA732CB0017D5F2 /* Resource */,
+				9AFB64BF1BA73EBE0017D5F2 /* View */,
 				9AFB64B01BA72F300017D5F2 /* Datasource */,
 				9AFB64AC1BA71E410017D5F2 /* Model */,
 				9AFB64A21BA68F5C0017D5F2 /* ViewController */,
@@ -204,9 +228,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9AFB649C1BA68B6C0017D5F2 /* Build configuration list for PBXNativeTarget "BlocNotes" */;
 			buildPhases = (
+				789CB66D59047D1DE1A42129 /* Check Pods Manifest.lock */,
 				9AFB64721BA68B6C0017D5F2 /* Sources */,
 				9AFB64731BA68B6C0017D5F2 /* Frameworks */,
 				9AFB64741BA68B6C0017D5F2 /* Resources */,
+				C1E000260E71B5C93C611A78 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -291,6 +317,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		789CB66D59047D1DE1A42129 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C1E000260E71B5C93C611A78 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BlocNotes/Pods-BlocNotes-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9AFB64721BA68B6C0017D5F2 /* Sources */ = {
@@ -425,6 +484,7 @@
 		};
 		9AFB649D1BA68B6C0017D5F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2C907059C5A8EEA338A35698 /* Pods-BlocNotes.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BlocNotes/Info.plist;
@@ -435,6 +495,7 @@
 		};
 		9AFB649E1BA68B6C0017D5F2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 42DE4CA432E23339F48FCCA2 /* Pods-BlocNotes.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BlocNotes/Info.plist;
@@ -496,6 +557,7 @@
 				9AFB649E1BA68B6C0017D5F2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9AFB649F1BA68B6C0017D5F2 /* Build configuration list for PBXNativeTarget "BlocNotesTests" */ = {
 			isa = XCConfigurationList;
@@ -504,6 +566,7 @@
 				9AFB64A11BA68B6C0017D5F2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

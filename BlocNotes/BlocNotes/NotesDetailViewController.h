@@ -9,9 +9,18 @@
 #import <UIKit/UIKit.h>
 #import "Note.h"
 
+@class NotesDetailViewController;
+
+@protocol NotesDetailViewControllerDelegate <NSObject>
+
+- (void)notesDetailViewController:(NotesDetailViewController *)detailViewController didFinishWithNote:(Note *)note;
+
+@end
+
 @interface NotesDetailViewController : UIViewController
 
 @property (nonatomic, strong, readonly) Note *note;
+@property (nonatomic, weak) id <NotesDetailViewControllerDelegate> delegate;
 
 - (instancetype)initWithNote:(Note *)note;
 
