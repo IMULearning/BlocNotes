@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A6E91C51BA8C4D900D41FC5 /* EmptyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6E91C41BA8C4D900D41FC5 /* EmptyViewController.m */; };
 		9AFB647C1BA68B6C0017D5F2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB647B1BA68B6C0017D5F2 /* main.m */; };
 		9AFB647F1BA68B6C0017D5F2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB647E1BA68B6C0017D5F2 /* AppDelegate.m */; };
 		9AFB64821BA68B6C0017D5F2 /* BlocNotes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64801BA68B6C0017D5F2 /* BlocNotes.xcdatamodeld */; };
@@ -40,6 +41,8 @@
 		2C907059C5A8EEA338A35698 /* Pods-BlocNotes.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlocNotes.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BlocNotes/Pods-BlocNotes.debug.xcconfig"; sourceTree = "<group>"; };
 		42DE4CA432E23339F48FCCA2 /* Pods-BlocNotes.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlocNotes.release.xcconfig"; path = "Pods/Target Support Files/Pods-BlocNotes/Pods-BlocNotes.release.xcconfig"; sourceTree = "<group>"; };
 		8D2A70BFDCB3CCF60218F74D /* libPods-BlocNotes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BlocNotes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A6E91C31BA8C4D900D41FC5 /* EmptyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmptyViewController.h; sourceTree = "<group>"; };
+		9A6E91C41BA8C4D900D41FC5 /* EmptyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmptyViewController.m; sourceTree = "<group>"; };
 		9AFB64761BA68B6C0017D5F2 /* BlocNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlocNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AFB647A1BA68B6C0017D5F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9AFB647B1BA68B6C0017D5F2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -182,6 +185,8 @@
 				9AFB64A71BA690330017D5F2 /* NotesDetailViewController.m */,
 				9AFB64A91BA699C80017D5F2 /* NotesSplitViewController.h */,
 				9AFB64AA1BA699C80017D5F2 /* NotesSplitViewController.m */,
+				9A6E91C31BA8C4D900D41FC5 /* EmptyViewController.h */,
+				9A6E91C41BA8C4D900D41FC5 /* EmptyViewController.m */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -371,6 +376,7 @@
 				9AFB647C1BA68B6C0017D5F2 /* main.m in Sources */,
 				9AFB64C21BA73ED70017D5F2 /* NotesTableViewCell.m in Sources */,
 				9AFB64AF1BA71E550017D5F2 /* Note.m in Sources */,
+				9A6E91C51BA8C4D900D41FC5 /* EmptyViewController.m in Sources */,
 				9AFB64A81BA690330017D5F2 /* NotesDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

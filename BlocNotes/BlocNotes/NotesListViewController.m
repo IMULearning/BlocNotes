@@ -79,6 +79,8 @@
                 Note *newNote = [[NotesManager datasource] noteAtIndex:newPath.row];
                 [self.tableView selectRowAtIndexPath:newPath animated:YES scrollPosition:UITableViewScrollPositionNone];
                 [self presentDetailViewControllerWithNote:newNote];
+            } else {
+                [self presentDetailViewController:self.emptyVC];
             }
         }
     }
@@ -108,7 +110,7 @@
 
 #pragma mark - Button Targets
 
-- (void)createNoteButtonFired:(UIBarButtonItem *)sender {
+- (void)createNoteButtonFired:(id)sender {
     Note *note = [[NotesManager datasource] initializeNewNote];
     if ([[NotesManager datasource] insertNote:note]) {
         NSUInteger index = [[NotesManager datasource] indexForNote:note];
@@ -130,7 +132,11 @@
         self.lastDisplayDetailVC = detailVC;
     }
     detailVC.delegate = self;
-    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    [self presentDetailViewController:detailVC];
+}
+
+- (void)presentDetailViewController:(UIViewController *)vc {
+    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:vc];
     [self.splitViewController showDetailViewController:detailNavVC sender:self];
 }
 
@@ -150,6 +156,11 @@
     [self.tableView beginUpdates];
     [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];
+}
+
+- (void)setEmptyVC:(EmptyViewController *)emptyVC {
+    _emptyVC = emptyVC;
+    _emptyVC.owner = self;
 }
 
 @end
