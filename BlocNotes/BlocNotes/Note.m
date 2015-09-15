@@ -12,6 +12,7 @@
 
 @synthesize title;
 @synthesize content;
+@synthesize created;
 
 - (instancetype) initWithDictionary:(NSDictionary *)json {
     self = [super init];

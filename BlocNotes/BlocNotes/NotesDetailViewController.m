@@ -123,6 +123,9 @@
 - (void)doneFired:(UIBarButtonItem *)sender {
     self.note.title = self.titleTextField.text;
     self.note.content = self.contentTextView.text;
+    if (!self.note.created) {
+        self.note.created = [NSDate date];
+    }
     
     [[NotesManager datasource] updateNote:self.note];
     

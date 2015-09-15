@@ -61,6 +61,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NotesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_ID forIndexPath:indexPath];
     cell.note = [[NotesManager datasource] noteAtIndex:indexPath.row];
+    NSLog(@"%@", cell.note.created);
     return cell;
 }
 

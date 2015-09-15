@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *content;
+@property (nonatomic, strong) NSDate *created;
 
 - (instancetype) initWithDictionary:(NSDictionary *)json;
 
