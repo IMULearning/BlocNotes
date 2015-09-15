@@ -10,8 +10,8 @@
 
 @implementation Note
 
-@synthesize title;
-@synthesize content;
+@dynamic title;
+@dynamic content;
 
 - (instancetype) initWithDictionary:(NSDictionary *)json {
     self = [super init];
@@ -20,14 +20,6 @@
         self.content = json[@"content"];
     }
     return self;
-}
-
-- (NSString *)title {
-    return [title ? title : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-}
-
-- (NSString *)content {
-    return [content ? content : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end

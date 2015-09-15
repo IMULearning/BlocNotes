@@ -121,8 +121,8 @@
 #pragma mark - Button Target
 
 - (void)doneFired:(UIBarButtonItem *)sender {
-    self.note.title = self.titleTextField.text;
-    self.note.content = self.contentTextView.text;
+    self.note.title = [self.titleTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    self.note.content = [self.contentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
     [[NotesManager datasource] updateNote:self.note];
     
