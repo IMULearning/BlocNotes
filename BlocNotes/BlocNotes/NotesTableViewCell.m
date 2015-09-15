@@ -44,7 +44,14 @@
 
 - (void)setNote:(Note *)note {
     _note = note;
-    _descriptionLabel.text = _note.description;
+    if (_note.title.length > 0) {
+        _descriptionLabel.text = _note.title;
+    } else if (_note.content.length > 0) {
+        _descriptionLabel.text = _note.description;
+    } else {
+        _descriptionLabel.text = NEW_NOTE;
+    }
+    
 }
 
 @end

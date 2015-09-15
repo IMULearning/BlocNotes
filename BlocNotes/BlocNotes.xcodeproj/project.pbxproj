@@ -22,6 +22,7 @@
 		9AFB64BB1BA73BED0017D5F2 /* NoteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64BA1BA73BED0017D5F2 /* NoteTests.m */; };
 		9AFB64BE1BA73D770017D5F2 /* NotesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64BD1BA73D770017D5F2 /* NotesManager.m */; };
 		9AFB64C21BA73ED70017D5F2 /* NotesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */; };
+		9AFB64C51BA7E2450017D5F2 /* CoreDataDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB64C41BA7E2450017D5F2 /* CoreDataDatasource.m */; };
 		EC4A7A4AC1221832163C33A0 /* libPods-BlocNotes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D2A70BFDCB3CCF60218F74D /* libPods-BlocNotes.a */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +68,8 @@
 		9AFB64BD1BA73D770017D5F2 /* NotesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesManager.m; sourceTree = "<group>"; };
 		9AFB64C01BA73ED70017D5F2 /* NotesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesTableViewCell.h; sourceTree = "<group>"; };
 		9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesTableViewCell.m; sourceTree = "<group>"; };
+		9AFB64C31BA7E2450017D5F2 /* CoreDataDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataDatasource.h; sourceTree = "<group>"; };
+		9AFB64C41BA7E2450017D5F2 /* CoreDataDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataDatasource.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +203,8 @@
 				9AFB64B41BA72F9E0017D5F2 /* NotesDatasource.h */,
 				9AFB64BC1BA73D770017D5F2 /* NotesManager.h */,
 				9AFB64BD1BA73D770017D5F2 /* NotesManager.m */,
+				9AFB64C31BA7E2450017D5F2 /* CoreDataDatasource.h */,
+				9AFB64C41BA7E2450017D5F2 /* CoreDataDatasource.m */,
 			);
 			name = Datasource;
 			sourceTree = "<group>";
@@ -359,6 +364,7 @@
 				9AFB647F1BA68B6C0017D5F2 /* AppDelegate.m in Sources */,
 				9AFB64BE1BA73D770017D5F2 /* NotesManager.m in Sources */,
 				9AFB64AB1BA699C80017D5F2 /* NotesSplitViewController.m in Sources */,
+				9AFB64C51BA7E2450017D5F2 /* CoreDataDatasource.m in Sources */,
 				9AFB64B31BA72F590017D5F2 /* InMemoryDatasource.m in Sources */,
 				9AFB64821BA68B6C0017D5F2 /* BlocNotes.xcdatamodeld in Sources */,
 				9AFB64A51BA6901B0017D5F2 /* NotesListViewController.m in Sources */,

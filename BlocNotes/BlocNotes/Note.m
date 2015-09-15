@@ -10,6 +10,9 @@
 
 @implementation Note
 
+@synthesize title;
+@synthesize content;
+
 - (instancetype) initWithDictionary:(NSDictionary *)json {
     self = [super init];
     if (self) {
@@ -20,25 +23,11 @@
 }
 
 - (NSString *)title {
-    return [_title ? _title : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return [title ? title : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (NSString *)content {
-    return [_content ? _content : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-}
-
-- (NSString *)description {
-    if (self.title && self.title.length > 0) {
-        return self.title;
-    } else if (self.content && self.content.length > 0) {
-        return self.content;
-    } else {
-        return NEW_NOTE;
-    }
-}
-
-- (BOOL)hasText {
-    return self.title.length > 0 || self.content.length > 0;
+    return [content ? content : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end

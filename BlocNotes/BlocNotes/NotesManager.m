@@ -8,11 +8,13 @@
 
 #import "NotesManager.h"
 #import "InMemoryDatasource.h"
+#import "CoreDataDatasource.h"
 
 @implementation NotesManager
 
 + (id <NotesDatasource>) datasource {
-    return [InMemoryDatasource sharedInstnace];
+    //return [InMemoryDatasource sharedInstnace];
+    return [CoreDataDatasource sharedInstnace];
 }
 
 @end

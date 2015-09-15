@@ -7,18 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
 #define NEW_NOTE NSLocalizedString(@"New Note", @"New Note")
 
-@interface Note : NSObject
+@interface Note : NSManagedObject
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *content;
 
 - (instancetype) initWithDictionary:(NSDictionary *)json;
-
-- (NSString *)description;
-
-- (BOOL)hasText;
 
 @end

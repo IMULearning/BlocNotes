@@ -87,7 +87,7 @@
     NSUInteger index = [[NotesManager datasource] indexForNote:note];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     
-    if (note.hasText) {
+    if (note.title.length > 0 || note.content.length > 0) {
         [self reloadRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
     } else {
         if ([[NotesManager datasource] removeNote:note]) {

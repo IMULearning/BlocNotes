@@ -3,6 +3,7 @@ platform :ios, '8.0'
 
 target 'BlocNotes' do
 	pod 'UITextView+Placeholder'
+	pod 'ObjectiveRecord'
 end
 
 target 'BlocNotesTests' do
