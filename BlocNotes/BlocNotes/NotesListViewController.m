@@ -89,6 +89,10 @@
     
     if (note.title.length > 0 || note.content.length > 0) {
         [self reloadRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+    } else {
+        if ([[NotesManager datasource] removeNote:note]) {
+            [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+        }
     }
 }
 
@@ -98,7 +102,6 @@
     Note *note = [[NotesManager datasource] initializeNewNote];
     if ([[NotesManager datasource] insertNote:note]) {
         NSUInteger index = [[NotesManager datasource] indexForNote:note];
-        NSLog(@"%ld", index);
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self insertRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
         [self presentDetailViewControllerWithNote:note];
@@ -110,7 +113,8 @@
 - (void)presentDetailViewControllerWithNote:(Note *)note {
     NotesDetailViewController *detailVC = [[NotesDetailViewController alloc] initWithNote:note];
     detailVC.delegate = self;
-    [self.splitViewController showDetailViewController:detailVC sender:self];
+    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    [self.splitViewController showDetailViewController:detailNavVC sender:self];
 }
 
 - (void)insertRowsAtIndexPaths:(NSArray *)indexPaths forTableView:(UITableView *)tableView {

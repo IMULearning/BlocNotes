@@ -12,12 +12,14 @@
 
 @dynamic title;
 @dynamic content;
+@dynamic createdTime;
 
 - (instancetype) initWithDictionary:(NSDictionary *)json {
     self = [super init];
     if (self) {
         self.title = json[@"title"];
         self.content = json[@"content"];
+        self.createdTime = [NSDate date];
     }
     return self;
 }

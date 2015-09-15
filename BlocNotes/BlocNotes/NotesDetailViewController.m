@@ -43,6 +43,15 @@
     [self createUIControls];
 }
 
+- (void)didMoveToParentViewController:(UIViewController *)parent {
+    // popped off the navigation stack.
+    if (parent.parentViewController == nil) {
+        if (self.delegate) {
+            [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
+        }
+    }
+}
+
 - (void)setupNavigationBar {
     self.navigationItem.title = NEW_NOTE;
     
@@ -53,8 +62,6 @@
     self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonFired:)];
     
     self.navigationItem.rightBarButtonItems = @[self.doneButton, self.shareButton];
-    
-    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)createUIControls {
@@ -126,7 +133,7 @@
     
     [[NotesManager datasource] updateNote:self.note];
     
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController.navigationController popToRootViewControllerAnimated:YES];
     if (self.delegate) {
         [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
     }

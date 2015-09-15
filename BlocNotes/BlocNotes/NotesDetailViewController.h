@@ -13,7 +13,8 @@
 
 @protocol NotesDetailViewControllerDelegate <NSObject>
 
-- (void)notesDetailViewController:(NotesDetailViewController *)detailViewController didFinishWithNote:(Note *)note;
+- (void)notesDetailViewController:(NotesDetailViewController *)detailViewController
+                didFinishWithNote:(Note *)note;
 
 @end
 

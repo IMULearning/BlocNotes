@@ -9,9 +9,7 @@
 #import "CoreDataDatasource.h"
 #import <ObjectiveRecord.h>
 
-@interface CoreDataDatasource () {
-    NSMutableArray *_cache;
-}
+@interface CoreDataDatasource ()
 
 @property (nonatomic, strong) NSArray *cache;
 
@@ -33,7 +31,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.cache = [Note all];
+        self.cache = [Note allWithOrder:@"createdTime"];
     }
     return self;
 }
@@ -51,12 +49,14 @@
 }
 
 - (Note *)initializeNewNote {
-    return [Note create];
+    Note *newNote = [Note create];
+    newNote.createdTime = [NSDate date];
+    return newNote;
 }
 
 - (BOOL)insertNote:(Note *)newNote {
     [newNote save];
-    self.cache = [Note all];
+    self.cache = [Note allWithOrder:@"createdTime"];
     return YES;
 }
 
@@ -67,12 +67,20 @@
 
 - (BOOL)removeNote:(Note *)noteToRemove {
     [noteToRemove delete];
-    self.cache = [Note all];
+    self.cache = [Note allWithOrder:@"createdTime"];
     return YES;
 }
 
 - (NSUInteger)countNotes {
-    return [Note count];
+    return self.cache.count;
+}
+
+- (void)setCache:(NSArray *)cache {
+    _cache = cache;
+    [cache enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Note *note = obj;
+        NSLog(@"%@", note.title);
+    }];
 }
 
 @end
