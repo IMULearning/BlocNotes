@@ -92,8 +92,10 @@
         [[NotesManager datasource] updateNote:note];
         [self reloadRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
     } else {
-        if ([[NotesManager datasource] removeNote:note]) {
-            [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+        if (index != NSNotFound) {
+            if ([[NotesManager datasource] removeNote:note]) {
+                [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+            }
         }
     }
 }
