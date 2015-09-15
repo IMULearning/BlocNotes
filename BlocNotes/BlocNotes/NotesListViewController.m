@@ -74,6 +74,12 @@
         Note *note = [[NotesManager datasource] noteAtIndex:indexPath.row];
         if ([[NotesManager datasource] removeNote:note]) {
             [self deleteRowsAtIndexPaths:@[indexPath] forTableView:tableView];
+            if (indexPath.row > 0) {
+                NSIndexPath *newPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:0];
+                Note *newNote = [[NotesManager datasource] noteAtIndex:newPath.row];
+                [self.tableView selectRowAtIndexPath:newPath animated:YES scrollPosition:UITableViewScrollPositionNone];
+                [self presentDetailViewControllerWithNote:newNote];
+            }
         }
     }
 }
