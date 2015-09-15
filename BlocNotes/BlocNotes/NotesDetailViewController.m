@@ -45,11 +45,18 @@
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
     // popped off the navigation stack.
-    if (parent.parentViewController == nil) {
-        if (self.delegate) {
-            [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
-        }
+//    if (parent.parentViewController == nil) {
+//        if (self.delegate) {
+//            [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
+//        }
+//    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    if (self.delegate) {
+        [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
     }
+    [super viewWillDisappear:animated];
 }
 
 - (void)setupNavigationBar {
@@ -130,8 +137,6 @@
 - (void)doneFired:(UIBarButtonItem *)sender {
     self.note.title = [self.titleTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     self.note.content = [self.contentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
-    [[NotesManager datasource] updateNote:self.note];
     
     [self.navigationController.navigationController popToRootViewControllerAnimated:YES];
     if (self.delegate) {

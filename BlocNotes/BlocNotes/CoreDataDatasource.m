@@ -77,10 +77,10 @@
 
 - (void)setCache:(NSArray *)cache {
     _cache = cache;
-    [cache enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Note *note = obj;
-        NSLog(@"%@", note.title);
-    }];
+//    [cache enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//        Note *note = obj;
+//        NSLog(@"%@", note.title);
+//    }];
 }
 
 @end

@@ -16,6 +16,7 @@
 @interface NotesListViewController () <NotesDetailViewControllerDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *createNoteButton;
+@property (nonatomic, weak) NotesDetailViewController *lastDisplayDetailVC;
 
 @end
 
@@ -45,6 +46,12 @@
     
     self.createNoteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createNoteButtonFired:)];
     self.navigationItem.rightBarButtonItem = self.createNoteButton;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    NSLog(@"called");
 }
 
 #pragma mark - UITableViewController DataSource
@@ -88,6 +95,7 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     
     if (note.title.length > 0 || note.content.length > 0) {
+        [[NotesManager datasource] updateNote:note];
         [self reloadRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
     } else {
         if ([[NotesManager datasource] removeNote:note]) {
@@ -104,6 +112,7 @@
         NSUInteger index = [[NotesManager datasource] indexForNote:note];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self insertRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
         [self presentDetailViewControllerWithNote:note];
     }
 }
@@ -111,7 +120,13 @@
 #pragma mark - Misc
 
 - (void)presentDetailViewControllerWithNote:(Note *)note {
-    NotesDetailViewController *detailVC = [[NotesDetailViewController alloc] initWithNote:note];
+    NotesDetailViewController *detailVC = nil;
+    if (self.lastDisplayDetailVC.note == note) {
+        detailVC = self.lastDisplayDetailVC;
+    } else {
+        detailVC = [[NotesDetailViewController alloc] initWithNote:note];
+        self.lastDisplayDetailVC = detailVC;
+    }
     detailVC.delegate = self;
     UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:detailVC];
     [self.splitViewController showDetailViewController:detailNavVC sender:self];
