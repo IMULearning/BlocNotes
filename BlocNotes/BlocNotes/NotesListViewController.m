@@ -103,6 +103,10 @@
         if (index != NSNotFound) {
             if ([[NotesManager datasource] removeNote:note]) {
                 [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+                if ([[NotesManager datasource] countNotes] == 0) {
+                    NSLog(@"%@", self.emptyVC);
+                    [self presentDetailViewController:self.emptyVC];
+                }
             }
         }
     }
