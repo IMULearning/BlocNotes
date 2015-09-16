@@ -96,7 +96,6 @@
             [self.tableView selectRowAtIndexPath:newPath animated:YES scrollPosition:UITableViewScrollPositionNone];
             if (self.delegate) {
                 [self.delegate notesTableViewController:self didFocusOnNote:newNote];
-                [self.delegate notesTableViewController:self requestToEditNote:newNote];
             }
         }
     }
