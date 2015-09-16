@@ -29,7 +29,11 @@
     [self.tableView registerClass:[NotesTableViewCell class] forCellReuseIdentifier:CELL_ID];
     
     [self configureNavigationBar];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
     [self selectFirstItem];
+    [super viewWillAppear:animated];
 }
 
 - (void)configureNavigationBar {
@@ -94,9 +98,11 @@
                 [self.delegate notesTableViewController:self didFocusOnNote:newNote];
                 [self.delegate notesTableViewController:self requestToEditNote:newNote];
             }
-        } else {
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
         }
+    }
+    
+    if ([[NotesManager datasource] countNotes] == 0) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
     }
 }
 
@@ -115,6 +121,11 @@
 - (void)notesEditViewController:(NotesEditViewController *)notesEditViewController
                 receivedNewNote:(Note *)newNote
                toReplaceOldNote:(Note *)oldNote {
+    NSUInteger index = [[NotesManager datasource] indexForNote:oldNote];
+    if (index != NSNotFound) {
+        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] forTableView:self.tableView];
+    }
+    
     if (newNote == oldNote) {
         return;
     }
@@ -150,6 +161,7 @@
 
 - (void)didRequestNewNoteFromNotesStartViewController:(NotesStartViewController *)notesStartViewController {
     Note *note = [self createNewNoteAndInsertToView];
+    NSLog(@"%@", self.delegate);
     if (self.delegate) {
         [self.delegate notesTableViewController:self requestToEditNote:note];
     }

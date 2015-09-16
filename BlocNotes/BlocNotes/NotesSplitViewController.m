@@ -12,6 +12,8 @@
 
 @interface NotesSplitViewController () <UISplitViewControllerDelegate>
 
+@property (nonatomic, assign) BOOL wasDisplayingEmptyView;
+
 @end
 
 @implementation NotesSplitViewController
@@ -32,6 +34,10 @@
 }
 
 - (void)notesTableViewController:(NotesTableViewController *)notesTableViewController requestToEditNote:(Note *)note {
+    if (self.wasDisplayingEmptyView) {
+        [self.detailNavVC.navigationController popToRootViewControllerAnimated:YES];
+    }
+    self.wasDisplayingEmptyView = NO;
     self.detailVC.note = note;
     self.detailNavVC = [[UINavigationController alloc] initWithRootViewController:self.detailVC];
     [self showDetailViewController:self.detailNavVC sender:self];
@@ -48,6 +54,7 @@
 - (void) displayEmptyStateViewController {
     self.detailNavVC = [[UINavigationController alloc] initWithRootViewController:self.emptyStateVC];
     [self showDetailViewController:self.detailNavVC sender:self];
+    self.wasDisplayingEmptyView = YES;
 }
 
 @end
