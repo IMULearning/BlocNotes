@@ -10,25 +10,24 @@
 
 @implementation Note
 
+<<<<<<< HEAD
 @synthesize title;
 @synthesize content;
 @synthesize created;
+=======
+@dynamic title;
+@dynamic content;
+@dynamic createdTime;
+>>>>>>> origin/feature/crud
 
 - (instancetype) initWithDictionary:(NSDictionary *)json {
     self = [super init];
     if (self) {
         self.title = json[@"title"];
         self.content = json[@"content"];
+        self.createdTime = [NSDate date];
     }
     return self;
-}
-
-- (NSString *)title {
-    return [title ? title : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-}
-
-- (NSString *)content {
-    return [content ? content : @"" stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end

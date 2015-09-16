@@ -11,6 +11,8 @@
 
 @interface CoreDataDatasource ()
 
+@property (nonatomic, strong) NSArray *cache;
+
 @end
 
 @implementation CoreDataDatasource
@@ -26,24 +28,35 @@
     return instance;
 }
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.cache = [Note allWithOrder:@"createdTime"];
+    }
+    return self;
+}
+
 - (NSArray *)loadAllNotes {
-    return [Note all];
+    return self.cache;
 }
 
 - (Note *)noteAtIndex:(NSUInteger)index {
-    return [[Note all] objectAtIndex:index];
+    return [self.cache objectAtIndex:index];
 }
 
 - (NSInteger)indexForNote:(Note *)note {
-    return [[Note all] indexOfObject:note];
+    return [self.cache indexOfObject:note];
 }
 
 - (Note *)initializeNewNote {
-    return [Note create];
+    Note *newNote = [Note create];
+    newNote.createdTime = [NSDate date];
+    return newNote;
 }
 
 - (BOOL)insertNote:(Note *)newNote {
     [newNote save];
+    self.cache = [Note allWithOrder:@"createdTime"];
     return YES;
 }
 
@@ -54,11 +67,16 @@
 
 - (BOOL)removeNote:(Note *)noteToRemove {
     [noteToRemove delete];
+    self.cache = [Note allWithOrder:@"createdTime"];
     return YES;
 }
 
 - (NSUInteger)countNotes {
-    return [Note count];
+    return self.cache.count;
+}
+
+- (void)setCache:(NSArray *)cache {
+    _cache = cache;
 }
 
 @end

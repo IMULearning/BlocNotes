@@ -47,7 +47,7 @@
     if (_note.title.length > 0) {
         _descriptionLabel.text = _note.title;
     } else if (_note.content.length > 0) {
-        _descriptionLabel.text = _note.description;
+        _descriptionLabel.text = _note.content;
     } else {
         _descriptionLabel.text = NEW_NOTE;
     }

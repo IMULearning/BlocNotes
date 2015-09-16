@@ -16,6 +16,7 @@
 @interface NotesListViewController () <NotesDetailViewControllerDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *createNoteButton;
+@property (nonatomic, weak) NotesDetailViewController *lastDisplayDetailVC;
 
 @end
 
@@ -74,6 +75,14 @@
         Note *note = [[NotesManager datasource] noteAtIndex:indexPath.row];
         if ([[NotesManager datasource] removeNote:note]) {
             [self deleteRowsAtIndexPaths:@[indexPath] forTableView:tableView];
+            if (indexPath.row > 0) {
+                NSIndexPath *newPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:0];
+                Note *newNote = [[NotesManager datasource] noteAtIndex:newPath.row];
+                [self.tableView selectRowAtIndexPath:newPath animated:YES scrollPosition:UITableViewScrollPositionNone];
+                [self presentDetailViewControllerWithNote:newNote];
+            } else {
+                [self presentDetailViewController:self.emptyVC];
+            }
         }
     }
 }
@@ -89,21 +98,30 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     
     if (note.title.length > 0 || note.content.length > 0) {
+        [[NotesManager datasource] updateNote:note];
         [self reloadRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
     } else {
-        if ([[NotesManager datasource] removeNote:note]) {
-            [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+        if (index != NSNotFound) {
+            if ([[NotesManager datasource] removeNote:note]) {
+                [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+                if ([[NotesManager datasource] countNotes] == 0) {
+                    NSLog(@"%@", self.emptyVC);
+                    [self presentDetailViewController:self.emptyVC];
+                }
+            }
         }
     }
 }
 
 #pragma mark - Button Targets
 
-- (void)createNoteButtonFired:(UIBarButtonItem *)sender {
+- (void)createNoteButtonFired:(id)sender {
     Note *note = [[NotesManager datasource] initializeNewNote];
     if ([[NotesManager datasource] insertNote:note]) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        NSUInteger index = [[NotesManager datasource] indexForNote:note];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self insertRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
+        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
         [self presentDetailViewControllerWithNote:note];
     }
 }
@@ -111,9 +129,20 @@
 #pragma mark - Misc
 
 - (void)presentDetailViewControllerWithNote:(Note *)note {
-    NotesDetailViewController *detailVC = [[NotesDetailViewController alloc] initWithNote:note];
+    NotesDetailViewController *detailVC = nil;
+    if (self.lastDisplayDetailVC.note == note) {
+        detailVC = self.lastDisplayDetailVC;
+    } else {
+        detailVC = [[NotesDetailViewController alloc] initWithNote:note];
+        self.lastDisplayDetailVC = detailVC;
+    }
     detailVC.delegate = self;
-    [self.splitViewController showDetailViewController:detailVC sender:self];
+    [self presentDetailViewController:detailVC];
+}
+
+- (void)presentDetailViewController:(UIViewController *)vc {
+    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:vc];
+    [self.splitViewController showDetailViewController:detailNavVC sender:self];
 }
 
 - (void)insertRowsAtIndexPaths:(NSArray *)indexPaths forTableView:(UITableView *)tableView {
@@ -132,6 +161,11 @@
     [self.tableView beginUpdates];
     [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];
+}
+
+- (void)setEmptyVC:(EmptyViewController *)emptyVC {
+    _emptyVC = emptyVC;
+    _emptyVC.owner = self;
 }
 
 @end

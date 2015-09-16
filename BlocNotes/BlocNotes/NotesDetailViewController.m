@@ -43,6 +43,13 @@
     [self createUIControls];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    if (self.delegate) {
+        [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
+    }
+    [super viewWillDisappear:animated];
+}
+
 - (void)setupNavigationBar {
     self.navigationItem.title = NEW_NOTE;
     
@@ -53,8 +60,6 @@
     self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonFired:)];
     
     self.navigationItem.rightBarButtonItems = @[self.doneButton, self.shareButton];
-    
-    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)createUIControls {
@@ -121,19 +126,21 @@
 #pragma mark - Button Target
 
 - (void)doneFired:(UIBarButtonItem *)sender {
+<<<<<<< HEAD
     self.note.title = self.titleTextField.text;
     self.note.content = self.contentTextView.text;
     if (!self.note.created) {
         self.note.created = [NSDate date];
     }
+=======
+    self.note.title = [self.titleTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    self.note.content = [self.contentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+>>>>>>> origin/feature/crud
     
-    [[NotesManager datasource] updateNote:self.note];
-    
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController.navigationController popToRootViewControllerAnimated:YES];
     if (self.delegate) {
         [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
     }
-    
 }
 
 - (void)shareButtonFired:(UIBarButtonItem *)sender {

@@ -10,6 +10,8 @@
 #import "NotesListViewController.h"
 #import "NotesDetailViewController.h"
 #import "NotesSplitViewController.h"
+#import "EmptyViewController.h"
+#import "NotesManager.h"
 #import <CoreDataManager.h>
 
 @interface AppDelegate ()
@@ -22,6 +24,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     UIViewController *rootViewController = [self createRootViewController];
+    
+    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
     
     [self.window setRootViewController:rootViewController];
     [self.window setBackgroundColor:[UIColor whiteColor]];
@@ -57,8 +61,11 @@
     NotesSplitViewController *splitVC = [NotesSplitViewController new];
     NotesListViewController *listVC = [NotesListViewController new];
     NotesDetailViewController *detailVC = [NotesDetailViewController new];
+    listVC.emptyVC = [EmptyViewController new];
+    
     UINavigationController *listNavVC = [[UINavigationController alloc] initWithRootViewController:listVC];
-    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:([[NotesManager datasource] countNotes] == 0) ? listVC.emptyVC : detailVC];
+        
     [splitVC setViewControllers:@[listNavVC, detailNavVC]];
     [splitVC setPreferredDisplayMode:UISplitViewControllerDisplayModeAllVisible];
     
