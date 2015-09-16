@@ -7,10 +7,10 @@
 //
 
 #import "AppDelegate.h"
-#import "NotesListViewController.h"
-#import "NotesDetailViewController.h"
 #import "NotesSplitViewController.h"
-#import "EmptyViewController.h"
+#import "NotesStartViewController.h"
+#import "NotesTableViewController.h"
+#import "NotesEditViewController.h"
 #import "NotesManager.h"
 #import <CoreDataManager.h>
 
@@ -23,13 +23,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    UIViewController *rootViewController = [self createRootViewController];
-    
     [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
     
-    [self.window setRootViewController:rootViewController];
+    [self.window setRootViewController:[self createRootViewController]];
     [self.window setBackgroundColor:[UIColor whiteColor]];
     [self.window makeKeyAndVisible];
+    
     return YES;
 }
 
@@ -59,14 +58,18 @@
 
 - (UIViewController *)createRootViewController {
     NotesSplitViewController *splitVC = [NotesSplitViewController new];
-    NotesListViewController *listVC = [NotesListViewController new];
-    NotesDetailViewController *detailVC = [NotesDetailViewController new];
-    listVC.emptyVC = [EmptyViewController new];
+    splitVC.masterVC = [NotesTableViewController new];
+    splitVC.detailVC = [NotesEditViewController new];
+    splitVC.emptyStateVC = [NotesStartViewController new];
+
+    splitVC.emptyStateVC.delegate = splitVC.masterVC;
+    splitVC.masterVC.delegate = splitVC;
+    splitVC.detailVC.delegate = splitVC.masterVC;
     
-    UINavigationController *listNavVC = [[UINavigationController alloc] initWithRootViewController:listVC];
-    UINavigationController *detailNavVC = [[UINavigationController alloc] initWithRootViewController:([[NotesManager datasource] countNotes] == 0) ? listVC.emptyVC : detailVC];
-        
-    [splitVC setViewControllers:@[listNavVC, detailNavVC]];
+    UINavigationController *masterNavVC = [[UINavigationController alloc] initWithRootViewController:splitVC.masterVC];
+    splitVC.detailNavVC = [[UINavigationController alloc] initWithRootViewController:([[NotesManager datasource] countNotes] == 0) ? splitVC.emptyStateVC : splitVC.detailVC];
+    
+    [splitVC setViewControllers:@[masterNavVC, splitVC.detailNavVC]];
     [splitVC setPreferredDisplayMode:UISplitViewControllerDisplayModeAllVisible];
     
     return splitVC;

@@ -1,21 +1,20 @@
 //
-//  NotesDetailViewController.m
+//  NotesEditViewController.m
 //  BlocNotes
 //
-//  Created by Weinan Qiu on 2015-09-14.
+//  Created by Weinan Qiu on 2015-09-15.
 //  Copyright (c) 2015 Kumiq. All rights reserved.
 //
 
-#import "NotesDetailViewController.h"
+#import "NotesEditViewController.h"
 #import <UITextView+Placeholder.h>
 #import "NotesManager.h"
+#import <ReactiveCocoa.h>
 
 #define TITLE_PLACEHOLDER NSLocalizedString(@"Title of this note", @"Title of this note")
 #define CONTENT_PLACEHOLDER NSLocalizedString(@"Write your note...", @"Write your note...")
 
-@interface NotesDetailViewController () <UITextFieldDelegate, UITextViewDelegate>
-
-@property (nonatomic, strong) Note *note;
+@interface NotesEditViewController () <UITextFieldDelegate, UITextViewDelegate>
 
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UIView *separator;
@@ -25,15 +24,7 @@
 
 @end
 
-@implementation NotesDetailViewController
-
-- (instancetype)initWithNote:(Note *)note {
-    self = [super init];
-    if (self) {
-        _note = note;
-    }
-    return self;
-}
+@implementation NotesEditViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -41,13 +32,26 @@
     
     [self setupNavigationBar];
     [self createUIControls];
+    [self setupTextSignals];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     if (self.delegate) {
-        [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
+        [self.delegate notesEditViewController:self didFinishWithNote:self.note];
     }
     [super viewWillDisappear:animated];
+}
+
+- (void)setupTextSignals {
+    [[self.titleTextField.rac_textSignal throttle:0.2] subscribeNext:^(id x) {
+        self.note.title = x;
+        [[NotesManager datasource] updateNote:self.note];
+    }];
+    
+    [[self.contentTextView.rac_textSignal throttle:0.2] subscribeNext:^(id x) {
+        self.note.content = x;
+        [[NotesManager datasource] updateNote:self.note];
+    }];
 }
 
 - (void)setupNavigationBar {
@@ -126,12 +130,9 @@
 #pragma mark - Button Target
 
 - (void)doneFired:(UIBarButtonItem *)sender {
-    self.note.title = [self.titleTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    self.note.content = [self.contentTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
     [self.navigationController.navigationController popToRootViewControllerAnimated:YES];
     if (self.delegate) {
-        [self.delegate notesDetailViewController:self didFinishWithNote:self.note];
+        [self.delegate notesEditViewController:self didFinishWithNote:self.note];
     }
 }
 
@@ -143,6 +144,17 @@
         UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[shareText] applicationActivities:nil];
         [self presentViewController:activityVC animated:YES completion:nil];
     }
+}
+
+#pragma mark - Note
+
+- (void)setNote:(Note *)note {
+    if (self.delegate) {
+        [self.delegate notesEditViewController:self receivedNewNote:note toReplaceOldNote:_note];
+    }
+    _note = note;
+    _titleTextField.text = _note.title;
+    _contentTextView.text = _note.content;
 }
 
 @end

@@ -1,21 +1,20 @@
 //
-//  EmptyViewController.m
+//  NotesStartViewController.m
 //  BlocNotes
 //
 //  Created by Weinan Qiu on 2015-09-15.
 //  Copyright (c) 2015 Kumiq. All rights reserved.
 //
 
-#import "EmptyViewController.h"
-#import "NotesListViewController.h"
+#import "NotesStartViewController.h"
 
-@interface EmptyViewController ()
+@interface NotesStartViewController ()
 
 @property (nonatomic, strong) UIButton *startButton;
 
 @end
 
-@implementation EmptyViewController
+@implementation NotesStartViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -39,8 +38,9 @@
 }
 
 - (void)startButtonFired:(UIButton *)sender {
-    [self.navigationController.navigationController popToRootViewControllerAnimated:YES];
-    [self.owner createNoteButtonFired:self];
+    if (self.delegate) {
+        [self.delegate didRequestNewNoteFromNotesStartViewController:self];
+    }
 }
 
 @end

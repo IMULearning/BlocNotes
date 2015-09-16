@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Note.h"
+#define NO_MORE_NOTES @"NoMoreNotesNotification";
 
 @protocol NotesDatasource <NSObject>
 
