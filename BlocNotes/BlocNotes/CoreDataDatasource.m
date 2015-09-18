@@ -77,9 +77,9 @@
 
 - (void)setCache:(NSArray *)cache {
     _cache = cache;
-//    if (_cache.count == 0) {
-//        [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
-//    }
+    if (_cache.count == 0) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
+    }
 }
 
 @end

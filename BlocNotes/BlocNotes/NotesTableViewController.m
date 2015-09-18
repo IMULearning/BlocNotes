@@ -108,10 +108,6 @@
             }
         }
     }
-    
-    if ([[NotesManager datasource] countNotes] == 0) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
-    }
 }
 
 #pragma mark - NotesEditViewControllerDelegate
@@ -158,8 +154,6 @@
                     Note *newNote = [[NotesManager datasource] noteAtIndex:newIndexPath.row];
                     [self.delegate notesTableViewController:self didFocusOnNote:newNote];
                 }
-            } else {
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
             }
         }
     }
@@ -169,7 +163,6 @@
 
 - (void)didRequestNewNoteFromNotesStartViewController:(NotesStartViewController *)notesStartViewController {
     Note *note = [self createNewNoteAndInsertToView];
-    NSLog(@"%@", self.delegate);
     if (self.delegate) {
         [self.delegate notesTableViewController:self requestToEditNote:note];
     }
