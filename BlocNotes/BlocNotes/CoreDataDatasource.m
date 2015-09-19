@@ -8,6 +8,7 @@
 
 #import "CoreDataDatasource.h"
 #import <ObjectiveRecord.h>
+#import "NotificationNames.h"
 
 @interface CoreDataDatasource ()
 
@@ -31,7 +32,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.cache = [Note allWithOrder:@"createdTime"];
+        self.cache = [Note allWithOrder:NSStringFromSelector(@selector(createdTime))];
     }
     return self;
 }
@@ -56,18 +57,29 @@
 
 - (BOOL)insertNote:(Note *)newNote {
     [newNote save];
-    self.cache = [Note allWithOrder:@"createdTime"];
+    self.cache = [Note allWithOrder:NSStringFromSelector(@selector(createdTime))];
+    [self sendNotificationWithName:DATASOURCE_DID_INSERT
+                          userInfo:[self dictionaryForEventNote:newNote]];
     return YES;
 }
 
 - (BOOL)updateNote:(Note *)noteToUpdate {
     [noteToUpdate save];
+    [self sendNotificationWithName:DATASOURCE_DID_UPDATE
+                          userInfo:[self dictionaryForEventNote:noteToUpdate]];
     return YES;
 }
 
 - (BOOL)removeNote:(Note *)noteToRemove {
+    if ([self indexForNote:noteToRemove] == NSNotFound) {
+        return NO;
+    }
+    
+    NSDictionary *eventUserInfo = [self dictionaryForEventNote:noteToRemove];
     [noteToRemove delete];
-    self.cache = [Note allWithOrder:@"createdTime"];
+    self.cache = [Note allWithOrder:NSStringFromSelector(@selector(createdTime))];
+    [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
+    
     return YES;
 }
 
@@ -78,8 +90,16 @@
 - (void)setCache:(NSArray *)cache {
     _cache = cache;
     if (_cache.count == 0) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"EmptyNotesNotification" object:nil];
+        [self sendNotificationWithName:DATASOURCE_IS_EMPTY userInfo:nil];
     }
+}
+
+- (void)sendNotificationWithName:(NSString *)notificationName userInfo:(NSDictionary *)userInfo {
+    [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil userInfo:userInfo];
+}
+
+- (NSDictionary *)dictionaryForEventNote:(Note *) note {
+    return @{@"index": [NSNumber numberWithInteger:[self indexForNote:note]], @"note": note};
 }
 
 @end

@@ -9,6 +9,7 @@
 #import "NotesSplitViewController.h"
 #import <ReactiveCocoa.h>
 #import "NotesManager.h"
+#import "NotificationNames.h"
 
 @interface NotesSplitViewController () <UISplitViewControllerDelegate>
 
@@ -22,7 +23,7 @@
     [super viewDidLoad];
     self.delegate = self;
 
-    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:@"EmptyNotesNotification" object:nil] subscribeNext:^(id x) {
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_IS_EMPTY object:nil] subscribeNext:^(id x) {
         [self displayEmptyStateViewController];
     }];
 }

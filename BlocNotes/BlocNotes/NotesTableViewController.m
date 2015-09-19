@@ -11,6 +11,8 @@
 #import "NotesTableViewCell.h"
 #import "NotesManager.h"
 #import "Note.h"
+#import <ReactiveCocoa.h>
+#import "NotificationNames.h"
 
 #define CELL_ID @"cell"
 
@@ -22,6 +24,8 @@
 
 @implementation NotesTableViewController
 
+#pragma mark - View lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -29,6 +33,7 @@
     [self.tableView registerClass:[NotesTableViewCell class] forCellReuseIdentifier:CELL_ID];
     
     [self configureNavigationBar];
+    [self registerNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -36,12 +41,28 @@
     [super viewWillAppear:animated];
 }
 
+#pragma mark - Setup
+
 - (void)configureNavigationBar {
     self.navigationItem.title = NSLocalizedString(@"BlocNotes", @"BlocNotes");
     self.createNoteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                           target:self
                                                                           action:@selector(createNoteButtonFired:)];
     self.navigationItem.rightBarButtonItem = self.createNoteButton;
+}
+
+- (void) registerNotifications {
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_DID_INSERT object:nil] subscribeNext:^(id x) {
+        [self didReceiveNotificationOnNoteCreation:x];
+    }];
+    
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_DID_UPDATE object:nil] subscribeNext:^(id x) {
+        [self didReceiveNotificationOnNoteUpdate:x];
+    }];
+    
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_DID_REMOVE object:nil] subscribeNext:^(id x) {
+        [self didReceiveNotificationOnNoteRemoval:x];
+    }];
 }
 
 - (void)selectFirstItem {
@@ -88,128 +109,122 @@
     }
     
     Note *note = [[NotesManager datasource] noteAtIndex:indexPath.row];
-    if ([[NotesManager datasource] removeNote:note]) {
-        [self deleteRowsAtIndexPaths:@[indexPath] forTableView:tableView];
-        
-        if (indexPath.row > 0) {
-            NSIndexPath *newPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:0];
-            Note *newNote = [[NotesManager datasource] noteAtIndex:newPath.row];
-            [self.tableView selectRowAtIndexPath:newPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-            if (self.delegate) {
-                [self.delegate notesTableViewController:self didFocusOnNote:newNote];
-            }
-        } else {
-            if ([[NotesManager datasource] countNotes] > 0) {
-                Note *newNote = [[NotesManager datasource] noteAtIndex:indexPath.row];
-                [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-                if (self.delegate) {
-                    [self.delegate notesTableViewController:self didFocusOnNote:newNote];
-                }
-            }
-        }
+    if (note) {
+        [[NotesManager datasource] removeNote:note];
     }
 }
 
 #pragma mark - NotesEditViewControllerDelegate
 
 - (void)notesEditViewController:(NotesEditViewController *)notesEditViewController didFinishWithNote:(Note *)note {
-    if (note.title.length > 0 || note.content.length > 0) {
-        NSUInteger index = [[NotesManager datasource] indexForNote:note];
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-        [self reloadRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
-    } else {
-        [self removeNoteIfEmptyAndUpdateView:note];
-    }
+    [self removeNoteIfEmpty:note];
 }
 
 - (void)notesEditViewController:(NotesEditViewController *)notesEditViewController
                 receivedNewNote:(Note *)newNote
                toReplaceOldNote:(Note *)oldNote {
-    NSUInteger index = [[NotesManager datasource] indexForNote:oldNote];
-    if (index != NSNotFound) {
-        [self reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] forTableView:self.tableView];
-    }
-    
     if (newNote == oldNote) {
         return;
     }
-    [self removeNoteIfEmptyAndUpdateView:oldNote];
+    [self removeNoteIfEmpty:oldNote];
 }
 
-- (void)removeNoteIfEmptyAndUpdateView:(Note *)note {
+- (void)removeNoteIfEmpty:(Note *)note {
     if (note.title.length > 0 || note.content.length > 0) {
         return;
     }
     
-    NSUInteger index = [[NotesManager datasource] indexForNote:note];
-    if (index != NSNotFound) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-        if ([[NotesManager datasource] removeNote:note]) {
-            [self deleteRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
-            NSInteger count = [[NotesManager datasource] countNotes];
-            if (count > 0) {
-                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:count - 1 inSection:0];
-                [self.tableView selectRowAtIndexPath:newIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-                if (self.delegate) {
-                    Note *newNote = [[NotesManager datasource] noteAtIndex:newIndexPath.row];
-                    [self.delegate notesTableViewController:self didFocusOnNote:newNote];
-                }
-            }
-        }
-    }
+    [[NotesManager datasource] removeNote:note];
 }
 
-#pragma mark - NotesStartViewControllerDelegate
+#pragma mark - Note creation (NotesStartViewControllerDelegate, Button targets)
 
 - (void)didRequestNewNoteFromNotesStartViewController:(NotesStartViewController *)notesStartViewController {
-    Note *note = [self createNewNoteAndInsertToView];
-    if (self.delegate) {
-        [self.delegate notesTableViewController:self requestToEditNote:note];
+    Note *newNote = [[NotesManager datasource] initializeNewNote];
+    if ([[NotesManager datasource] insertNote:newNote] && self.delegate) {
+        [self.delegate notesTableViewController:self requestToEditNote:newNote];
     }
 }
-
-
-#pragma mark - Button targets
 
 - (void)createNoteButtonFired:(UIBarButtonItem *)sender {
-    Note *note = [self createNewNoteAndInsertToView];
-    if (self.delegate) {
-        [self.delegate notesTableViewController:self requestToEditNote:note];
+    Note *newNote = [[NotesManager datasource] initializeNewNote];
+    if ([[NotesManager datasource] insertNote:newNote] && self.delegate) {
+        [self.delegate notesTableViewController:self requestToEditNote:newNote];
     }
 }
 
-#pragma mark - Misc
+#pragma mark - Datasource notification responders
 
-- (Note *)createNewNoteAndInsertToView {
-    Note *note = [[NotesManager datasource] initializeNewNote];
-    if ([[NotesManager datasource] insertNote:note]) {
-        NSUInteger index = [[NotesManager datasource] indexForNote:note];
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-        [self insertRowsAtIndexPaths:@[indexPath] forTableView:self.tableView];
-        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
+- (void)didReceiveNotificationOnNoteCreation:(NSNotification *)notification {
+    NSNumber *indexNumber = notification.userInfo[@"index"];
+    Note *newNote = notification.userInfo[@"note"];
+    [self insertTableRowForNote:newNote atIndex:[indexNumber integerValue]];
+    [self.tableView selectRowAtIndexPath:[self indexPathForIndex:[indexNumber integerValue]]
+                                animated:YES
+                          scrollPosition:UITableViewScrollPositionNone];
+    if (self.delegate) {
+        [self.delegate notesTableViewController:self didFocusOnNote:newNote];
+    }
+}
+
+- (void)didReceiveNotificationOnNoteUpdate:(NSNotification *)notification {
+    NSNumber *indexNumber = notification.userInfo[@"index"];
+    Note *note = notification.userInfo[@"note"];
+    [self reloadTableRowForNote:note atIndex:[indexNumber integerValue]];
+}
+
+- (void)didReceiveNotificationOnNoteRemoval:(NSNotification *)notification {
+    NSNumber *indexNumber = notification.userInfo[@"index"];
+    Note *noteRemoved = notification.userInfo[@"note"];
+    [self deleteTableRowForNote:noteRemoved atIndex:[indexNumber integerValue]];
+    
+    NSIndexPath *newSelectionPath = [self indexPathForNextSelectionFromRemovalOfRowAtIndex:[indexNumber integerValue]];
+    if (newSelectionPath.row != NSNotFound) {
+        [self.tableView selectRowAtIndexPath:newSelectionPath animated:YES scrollPosition:UITableViewScrollPositionNone];
         if (self.delegate) {
-            [self.delegate notesTableViewController:self didFocusOnNote:note];
+            Note *selectedNote = [[NotesManager datasource] noteAtIndex:newSelectionPath.row];
+            [self.delegate notesTableViewController:self didFocusOnNote:selectedNote];
         }
     }
-    return note;
 }
 
-- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths forTableView:(UITableView *)tableView {
-    [tableView beginUpdates];
-    [tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
-    [tableView endUpdates];
+- (NSIndexPath *)indexPathForNextSelectionFromRemovalOfRowAtIndex:(NSUInteger)removedRowIndex {
+    if (removedRowIndex > 0) {
+        return [NSIndexPath indexPathForRow:removedRowIndex - 1 inSection:0];
+    } else {
+        if ([[NotesManager datasource] countNotes] > 0) {
+            return [NSIndexPath indexPathForRow:removedRowIndex inSection:0];
+        } else {
+            return [NSIndexPath indexPathForRow:NSNotFound inSection:0];
+        }
+    }
 }
 
-- (void)reloadRowsAtIndexPaths:(NSArray *)indexPaths forTableView:(UITableView *)tableView {
+#pragma mark - Table view cells CRUD
+
+- (void)insertTableRowForNote:(Note *)note atIndex:(NSUInteger)index {
     [self.tableView beginUpdates];
-    [self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView insertRowsAtIndexPaths:@[[self indexPathForIndex:index]] withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];
 }
 
-- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths forTableView:(UITableView *)tableView {
+- (void)reloadTableRowForNote:(Note *)note atIndex:(NSUInteger)index {
     [self.tableView beginUpdates];
-    [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView reloadRowsAtIndexPaths:@[[self indexPathForIndex:index]] withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];
+}
+
+- (void)deleteTableRowForNote:(Note *)note atIndex:(NSUInteger)index {
+    if ([self.tableView numberOfRowsInSection:0] == 0) {
+        return;
+    }
+    [self.tableView beginUpdates];
+    [self.tableView deleteRowsAtIndexPaths:@[[self indexPathForIndex:index]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView endUpdates];
+}
+
+- (NSIndexPath *)indexPathForIndex:(NSUInteger) index {
+    return [NSIndexPath indexPathForRow:index inSection:0];
 }
 
 @end
