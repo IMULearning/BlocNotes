@@ -1,4 +1,5 @@
 PODS:
+  - Masonry (0.6.2)
   - ObjectiveRecord (1.5.0):
     - ObjectiveSugar
   - ObjectiveSugar (1.1.0)
@@ -12,11 +13,13 @@ PODS:
   - UITextView+Placeholder (1.1.0)
 
 DEPENDENCIES:
+  - Masonry
   - ObjectiveRecord
   - ReactiveCocoa (= 2.5)
   - UITextView+Placeholder
 
 SPEC CHECKSUMS:
+  Masonry: 362e8a1cc0beada4a4c4832d5e863da2a51533be
   ObjectiveRecord: f290d17272e476b3c881300910e98284200c54b6
   ObjectiveSugar: a6a25f23d657c19df0a0b972466d5b5ca9f5295c
   ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a

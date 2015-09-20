@@ -5,6 +5,7 @@ target 'BlocNotes' do
 	pod 'UITextView+Placeholder'
 	pod 'ObjectiveRecord'
 	pod 'ReactiveCocoa', '2.5'
+    pod 'Masonry'
 end
 
 target 'BlocNotesTests' do

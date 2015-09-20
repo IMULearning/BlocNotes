@@ -10,6 +10,7 @@
 #import <UITextView+Placeholder.h>
 #import "NotesManager.h"
 #import <ReactiveCocoa.h>
+#import <Masonry.h>
 
 #define TITLE_PLACEHOLDER NSLocalizedString(@"Title of this note", @"Title of this note")
 #define CONTENT_PLACEHOLDER NSLocalizedString(@"Write your note...", @"Write your note...")
@@ -26,6 +27,8 @@
 
 @implementation NotesEditViewController
 
+#pragma mark - View lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view setBackgroundColor:[UIColor whiteColor]];
@@ -33,6 +36,12 @@
     [self setupNavigationBar];
     [self createUIControls];
     [self setupTextSignals];
+    [self registerInitialAutoLayoutRules];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    [self updateTopPositionAutoLayoutRules];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -41,6 +50,8 @@
     }
     [super viewWillDisappear:animated];
 }
+
+#pragma mark - Setup
 
 - (void)setupTextSignals {
     [[self.titleTextField.rac_textSignal throttle:0.2] subscribeNext:^(id x) {
@@ -90,41 +101,41 @@
         view.translatesAutoresizingMaskIntoConstraints = NO;
         [self.view addSubview:view];
     }
-    
-    [self registerAutoLayoutRules];
 }
 
-- (void)registerAutoLayoutRules {
-    NSDictionary *uiControls = NSDictionaryOfVariableBindings(_titleTextField, _separator, _contentTextView);
-    
-    NSArray *titleTextHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-24-[_titleTextField]-|"
-                                                                                      options:kNilOptions
-                                                                                      metrics:nil
-                                                                                        views:uiControls];
-    NSArray *separatorHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-24-[_separator]|"
-                                                                                      options:kNilOptions
-                                                                                      metrics:nil
-                                                                                        views:uiControls];
-    NSArray *contentTextHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-20-[_contentTextView]-|"
-                                                                                        options:kNilOptions
-                                                                                        metrics:nil
-                                                                                          views:uiControls];
-    
-    [self.view addConstraints:titleTextHorizontalConstraints];
-    [self.view addConstraints:separatorHorizontalConstraints];
-    [self.view addConstraints:contentTextHorizontalConstraints];
+#pragma mark - Auto layout
+
+- (void)registerInitialAutoLayoutRules {
+    [self.titleTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).with.offset(self.topLayoutGuide.length + 15);
+        make.left.equalTo(self.view.mas_left).with.offset(24);
+        make.right.equalTo(self.view.mas_right).with.offset(-20);
+        make.height.equalTo(@35);
+    }];
+    [self.separator mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.titleTextField.mas_bottom).with.offset(20);
+        make.left.equalTo(self.view.mas_left).with.offset(24);
+        make.right.equalTo(self.view.mas_right);
+        make.height.equalTo(@1.5);
+    }];
+    [self.contentTextView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.separator.mas_bottom).with.offset(20);
+        make.left.equalTo(self.view.mas_left).with.offset(20);
+        make.right.equalTo(self.view.mas_right).with.offset(-20);
+        make.bottom.equalTo(self.view.mas_bottom).with.offset(-20);
+    }];
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    
-    NSDictionary *uiControls = NSDictionaryOfVariableBindings(_titleTextField, _separator, _contentTextView);
-    NSString *format = [NSString stringWithFormat:@"V:|-(%f)-[_titleTextField(==35)]-[_separator(==1.5)]-[_contentTextView]-|", self.topLayoutGuide.length + 15];
-    NSArray *verticalRelationConstraints = [NSLayoutConstraint constraintsWithVisualFormat:format
-                                                                                   options:kNilOptions
-                                                                                   metrics:nil
-                                                                                     views:uiControls];
-    [self.view addConstraints:verticalRelationConstraints];
+- (void)updateTopPositionAutoLayoutRules {
+    [self.titleTextField mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).with.offset(self.topLayoutGuide.length + 15);
+    }];
+    [self.separator mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.titleTextField.mas_bottom).with.offset(20);
+    }];
+    [self.contentTextView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.separator.mas_bottom).with.offset(20);
+    }];
 }
 
 #pragma mark - Button Target
