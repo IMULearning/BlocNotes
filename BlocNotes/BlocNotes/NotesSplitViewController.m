@@ -54,7 +54,8 @@
 
 - (void) displayEmptyStateViewController {
     self.detailNavVC = [[UINavigationController alloc] initWithRootViewController:self.emptyStateVC];
-    [self showDetailViewController:self.detailNavVC sender:self];
+    NSArray *currentViewControllers = self.viewControllers;
+    [self setViewControllers:@[currentViewControllers[0], self.detailNavVC]];
     self.wasDisplayingEmptyView = YES;
 }
 
