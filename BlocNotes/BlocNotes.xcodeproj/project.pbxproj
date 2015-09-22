@@ -48,6 +48,7 @@
 		9A6E91CA1BA9147F00D41FC5 /* NotesEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesEditViewController.m; sourceTree = "<group>"; };
 		9A6E91CC1BA914F000D41FC5 /* NotesStartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesStartViewController.h; sourceTree = "<group>"; };
 		9A6E91CD1BA914F000D41FC5 /* NotesStartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesStartViewController.m; sourceTree = "<group>"; };
+		9AF8E3501BB12E4300020414 /* BlocNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BlocNotes.entitlements; sourceTree = "<group>"; };
 		9AFB64761BA68B6C0017D5F2 /* BlocNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlocNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AFB647A1BA68B6C0017D5F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9AFB647B1BA68B6C0017D5F2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -135,6 +136,7 @@
 		9AFB64781BA68B6C0017D5F2 /* BlocNotes */ = {
 			isa = PBXGroup;
 			children = (
+				9AF8E3501BB12E4300020414 /* BlocNotes.entitlements */,
 				9AFB64B51BA732CB0017D5F2 /* Resource */,
 				9AFB64BF1BA73EBE0017D5F2 /* View */,
 				9AFB64B01BA72F300017D5F2 /* Datasource */,
@@ -284,6 +286,12 @@
 				TargetAttributes = {
 					9AFB64751BA68B6C0017D5F2 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 6BQ5V93PEG;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					9AFB64911BA68B6C0017D5F2 = {
 						CreatedOnToolsVersion = 6.4;
@@ -501,9 +509,13 @@
 			baseConfigurationReference = 2C907059C5A8EEA338A35698 /* Pods-BlocNotes.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BlocNotes/BlocNotes.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = BlocNotes/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -512,9 +524,13 @@
 			baseConfigurationReference = 42DE4CA432E23339F48FCCA2 /* Pods-BlocNotes.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BlocNotes/BlocNotes.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = BlocNotes/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

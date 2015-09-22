@@ -22,7 +22,9 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"BlocNotesDB"];
+    NSURL *containerDirectory = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.com.kumiq.BlocNotes"];
+    NSURL *databaseFileURL = [containerDirectory URLByAppendingPathComponent:kMagicalRecordDefaultStoreFileName];
+    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:databaseFileURL];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
