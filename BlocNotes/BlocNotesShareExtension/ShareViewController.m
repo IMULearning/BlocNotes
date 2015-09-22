@@ -43,8 +43,8 @@
     [self.extensionContext completeRequestReturningItems:@[] completionHandler:^(BOOL expired) {
         if (self.textView.text || self.urlString) {
             Note *newNote = [[NotesManager datasource] initializeNewNote];
-            newNote.title = self.urlString;
-            newNote.content = self.textView.text;
+            newNote.title = self.textView.text;
+            newNote.content = self.urlString;
             [[NotesManager datasource] insertNote:newNote];
         }
     }];
