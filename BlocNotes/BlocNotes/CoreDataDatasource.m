@@ -14,6 +14,7 @@
 
 @property (nonatomic, strong) NSArray *cache;
 @property (nonatomic, strong) NSString *filter;
+@property (nonatomic, strong) NSString *scope;
 
 @end
 
@@ -42,10 +43,23 @@
     if (!self.filter || self.filter.length == 0) {
         self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
     } else {
-        NSString *predicateText = [NSString stringWithFormat:@"(title like \"*%@*\") OR (content like \"*%@*\")", self.filter, self.filter];
-        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
-                                    ascending:YES
-                                withPredicate:[NSPredicate predicateWithFormat:predicateText]];
+        NSString *titleFilter = [NSString stringWithFormat:@"(title like \"*%@*\")", self.filter];
+        NSString *contentFilter = [NSString stringWithFormat:@"(content like \"*%@*\")", self.filter];
+        
+        if ([self.scope isEqualToString:@"Title"]) {
+            self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
+                                        ascending:YES
+                                    withPredicate:[NSPredicate predicateWithFormat:titleFilter]];
+        } else if ([self.scope isEqualToString:@"Content"]) {
+            self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
+                                        ascending:YES
+                                    withPredicate:[NSPredicate predicateWithFormat:contentFilter]];
+        } else {
+            NSString *allFilter = [NSString stringWithFormat:@"%@ OR %@", titleFilter, contentFilter];
+            self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
+                                        ascending:YES
+                                    withPredicate:[NSPredicate predicateWithFormat:allFilter]];
+        }
     }
 }
 
@@ -106,6 +120,13 @@
 
 - (NSArray *)loadNotesContainingText:(NSString *)text {
     self.filter = text;
+    [self reloadCache];
+    return self.cache;
+}
+
+- (NSArray *)loadNotesContainingText:(NSString *)text inScope:(NSString *)scope {
+    self.filter = text;
+    self.scope = scope;
     [self reloadCache];
     return self.cache;
 }

@@ -13,4 +13,6 @@
 
 + (id <NotesDatasource>) datasource;
 
++ (NSArray *) searchScopes;
+
 @end

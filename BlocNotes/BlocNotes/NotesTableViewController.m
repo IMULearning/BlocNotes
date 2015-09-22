@@ -16,7 +16,7 @@
 
 #define CELL_ID @"cell"
 
-@interface NotesTableViewController ()
+@interface NotesTableViewController () <UISearchBarDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *createNoteButton;
 @property (nonatomic, strong) UISearchController *searchController;
@@ -61,10 +61,13 @@
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.tableView.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
+    self.searchController.searchBar.scopeButtonTitles = [NotesManager searchScopes];
+    self.searchController.searchBar.delegate = self;
     
     UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"_searchField"];
     [[[searchTextField rac_textSignal] throttle:0.2] subscribeNext:^(id x) {
-        [self searchNotesWithText:x forScope:nil];
+        NSString *scope = [NotesManager searchScopes][self.searchController.searchBar.selectedScopeButtonIndex];
+        [self searchNotesWithText:x forScope:scope];
     }];
 }
 
@@ -253,11 +256,16 @@
     return [NSIndexPath indexPathForRow:index inSection:0];
 }
 
-#pragma mark - Search
+#pragma mark - Search / UISearchBarDelegate
 
 - (void)searchNotesWithText:(NSString *)text forScope:(NSString *)scope {
-    [[NotesManager datasource] loadNotesContainingText:text];
+    [[NotesManager datasource] loadNotesContainingText:text inScope:scope];
     [self.tableView reloadData];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
+    UITextField *searchTextField = [searchBar valueForKey:@"_searchField"];
+    [self searchNotesWithText:searchTextField.text forScope:[NotesManager searchScopes][selectedScope]];
 }
 
 @end

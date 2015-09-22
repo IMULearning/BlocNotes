@@ -17,4 +17,8 @@
     return [CoreDataDatasource sharedInstnace];
 }
 
++ (NSArray *) searchScopes {
+    return @[@"All", @"Title", @"Content"];
+}
+
 @end

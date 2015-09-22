@@ -29,4 +29,6 @@
 - (NSUInteger)countNotes;
 
 - (NSArray *)loadNotesContainingText:(NSString *)text;
+
+- (NSArray *)loadNotesContainingText:(NSString *)text inScope:(NSString *)scope;
 @end
