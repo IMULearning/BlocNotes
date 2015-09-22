@@ -8,6 +8,10 @@ target 'BlocNotes' do
     	pod 'Masonry'
 end
 
+target 'BlocNotesShareExtension' do
+	pod 'MagicalRecord'
+end
+
 target 'BlocNotesTests' do
 
 end
