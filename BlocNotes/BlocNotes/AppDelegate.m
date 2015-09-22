@@ -12,7 +12,7 @@
 #import "NotesTableViewController.h"
 #import "NotesEditViewController.h"
 #import "NotesManager.h"
-#import <CoreDataManager.h>
+#import <MagicalRecord.h>
 
 @interface AppDelegate ()
 
@@ -22,6 +22,8 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
+    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"BlocNotesDB"];
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
     
@@ -51,7 +53,7 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    [[CoreDataManager sharedManager] saveContext];
+    [MagicalRecord cleanUp];
 }
 
 #pragma mark - View Initialization

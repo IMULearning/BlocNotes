@@ -7,8 +7,8 @@
 //
 
 #import "CoreDataDatasource.h"
-#import <ObjectiveRecord.h>
 #import "NotificationNames.h"
+#import <MagicalRecord.h>
 
 @interface CoreDataDatasource ()
 
@@ -32,7 +32,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.cache = [Note allWithOrder:NSStringFromSelector(@selector(createdTime))];
+        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
     }
     return self;
 }
@@ -50,23 +50,25 @@
 }
 
 - (Note *)initializeNewNote {
-    Note *newNote = [Note create];
+    Note *newNote = [Note MR_createEntity];
     newNote.createdTime = [NSDate date];
     return newNote;
 }
 
 - (BOOL)insertNote:(Note *)newNote {
-    [newNote save];
-    self.cache = [Note allWithOrder:NSStringFromSelector(@selector(createdTime))];
-    [self sendNotificationWithName:DATASOURCE_DID_INSERT
-                          userInfo:[self dictionaryForEventNote:newNote]];
+    [newNote.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
+        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
+        [self sendNotificationWithName:DATASOURCE_DID_INSERT userInfo:[self dictionaryForEventNote:newNote]];
+    }];
+    
     return YES;
 }
 
 - (BOOL)updateNote:(Note *)noteToUpdate {
-    [noteToUpdate save];
-    [self sendNotificationWithName:DATASOURCE_DID_UPDATE
-                          userInfo:[self dictionaryForEventNote:noteToUpdate]];
+    [noteToUpdate.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
+        [self sendNotificationWithName:DATASOURCE_DID_UPDATE userInfo:[self dictionaryForEventNote:noteToUpdate]];
+    }];
+    
     return YES;
 }
 
@@ -76,9 +78,13 @@
     }
     
     NSDictionary *eventUserInfo = [self dictionaryForEventNote:noteToRemove];
-    [noteToRemove delete];
-    self.cache = [Note allWithOrder:NSStringFromSelector(@selector(createdTime))];
-    [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        Note *note = [noteToRemove MR_inContext:localContext];
+        [note MR_deleteEntity];
+    } completion:^(BOOL contextDidSave, NSError *error) {
+        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
+        [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
+    }];
     
     return YES;
 }

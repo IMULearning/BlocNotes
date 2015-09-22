@@ -3,9 +3,9 @@ platform :ios, '8.0'
 
 target 'BlocNotes' do
 	pod 'UITextView+Placeholder'
-	pod 'ObjectiveRecord'
+	pod "MagicalRecord"	
 	pod 'ReactiveCocoa', '2.5'
-    pod 'Masonry'
+    	pod 'Masonry'
 end
 
 target 'BlocNotesTests' do
