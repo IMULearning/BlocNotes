@@ -11,6 +11,8 @@
 
 
 #define DATASOURCE_IS_EMPTY @"DatasourceIsEmptyNotification"
+#define DATASOURCE_CACHE_IS_EMPTY @"DatasourceCacheIsEmptyNotification"
+#define DATASOURCE_CACHE_REFRESHED_WITH_RESULTS @"DatasourceCacheRefreshedWithResultsNotification"
 #define DATASOURCE_DID_INSERT @"DatasourceDidInsertNoteNotification"
 #define DATASOURCE_DID_UPDATE @"DatasourceDidUpdateNoteNotification"
 #define DATASOURCE_DID_REMOVE @"DatasourceDidRemoveNoteNotification"

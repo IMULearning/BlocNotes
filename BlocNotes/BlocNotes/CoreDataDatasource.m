@@ -13,6 +13,7 @@
 @interface CoreDataDatasource ()
 
 @property (nonatomic, strong) NSArray *cache;
+@property (nonatomic, strong) NSString *filter;
 
 @end
 
@@ -32,9 +33,20 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
+        [self reloadCache];
     }
     return self;
+}
+
+- (void)reloadCache {
+    if (!self.filter || self.filter.length == 0) {
+        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
+    } else {
+        NSString *predicateText = [NSString stringWithFormat:@"(title like \"*%@*\") OR (content like \"*%@*\")", self.filter, self.filter];
+        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
+                                    ascending:YES
+                                withPredicate:[NSPredicate predicateWithFormat:predicateText]];
+    }
 }
 
 - (NSArray *)loadAllNotes {
@@ -57,7 +69,7 @@
 
 - (BOOL)insertNote:(Note *)newNote {
     [newNote.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
-        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
+        [self reloadCache];
         [self sendNotificationWithName:DATASOURCE_DID_INSERT userInfo:[self dictionaryForEventNote:newNote]];
     }];
     
@@ -78,13 +90,12 @@
     }
     
     NSDictionary *eventUserInfo = [self dictionaryForEventNote:noteToRemove];
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         Note *note = [noteToRemove MR_inContext:localContext];
         [note MR_deleteEntity];
-    } completion:^(BOOL contextDidSave, NSError *error) {
-        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
-        [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
     }];
+    [self reloadCache];
+    [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
     
     return YES;
 }
@@ -93,11 +104,21 @@
     return self.cache.count;
 }
 
+- (NSArray *)loadNotesContainingText:(NSString *)text {
+    self.filter = text;
+    [self reloadCache];
+    return self.cache;
+}
+
 - (void)setCache:(NSArray *)cache {
     _cache = cache;
-    if (_cache.count == 0) {
+    if ([Note MR_countOfEntities] == 0) {
         [self sendNotificationWithName:DATASOURCE_IS_EMPTY userInfo:nil];
+    } else if (_cache.count == 0) {
+        [self sendNotificationWithName:DATASOURCE_CACHE_IS_EMPTY userInfo:nil];
     }
+    
+    [self sendNotificationWithName:DATASOURCE_CACHE_REFRESHED_WITH_RESULTS userInfo:@{@"count": [NSNumber numberWithInteger:[self countNotes]]}];
 }
 
 - (void)sendNotificationWithName:(NSString *)notificationName userInfo:(NSDictionary *)userInfo {

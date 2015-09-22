@@ -28,4 +28,5 @@
 
 - (NSUInteger)countNotes;
 
+- (NSArray *)loadNotesContainingText:(NSString *)text;
 @end

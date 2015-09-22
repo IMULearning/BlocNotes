@@ -26,11 +26,19 @@
     [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_IS_EMPTY object:nil] subscribeNext:^(id x) {
         [self displayEmptyStateViewController];
     }];
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_CACHE_IS_EMPTY object:nil] subscribeNext:^(id x) {
+        [self displayEmptyStateViewController];
+    }];
 }
 
 #pragma mark - NotesTableViewControllerDelegate
 
 - (void)notesTableViewController:(NotesTableViewController *)notesTableViewController didFocusOnNote:(Note *)note {
+    if (self.wasDisplayingEmptyView) {
+        self.detailNavVC = [[UINavigationController alloc] initWithRootViewController:self.detailVC];
+        [self setViewControllers:@[self.viewControllers[0], self.detailNavVC]];
+    }
+    self.wasDisplayingEmptyView = NO;
     self.detailVC.note = note;
 }
 
@@ -54,7 +62,7 @@
 
 - (void) displayEmptyStateViewController {
     self.detailNavVC = [[UINavigationController alloc] initWithRootViewController:self.emptyStateVC];
-    [self showDetailViewController:self.detailNavVC sender:self];
+    [self setViewControllers:@[self.viewControllers[0], self.detailNavVC]];
     self.wasDisplayingEmptyView = YES;
 }
 

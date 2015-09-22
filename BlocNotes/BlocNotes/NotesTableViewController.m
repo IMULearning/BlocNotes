@@ -19,6 +19,7 @@
 @interface NotesTableViewController ()
 
 @property (nonatomic, strong) UIBarButtonItem *createNoteButton;
+@property (nonatomic, strong) UISearchController *searchController;
 
 @end
 
@@ -32,12 +33,16 @@
     [self.view setBackgroundColor:[UIColor whiteColor]];
     [self.tableView registerClass:[NotesTableViewCell class] forCellReuseIdentifier:CELL_ID];
     
+    [self configureSearchBar];
     [self configureNavigationBar];
     [self registerNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self selectFirstItem];
+    if (![self.tableView indexPathForSelectedRow]) {
+        [self selectFirstItem];
+    }
+    
     [super viewWillAppear:animated];
 }
 
@@ -49,6 +54,18 @@
                                                                           target:self
                                                                           action:@selector(createNoteButtonFired:)];
     self.navigationItem.rightBarButtonItem = self.createNoteButton;
+}
+
+- (void)configureSearchBar {
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
+    
+    UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"_searchField"];
+    [[[searchTextField rac_textSignal] throttle:0.2] subscribeNext:^(id x) {
+        [self searchNotesWithText:x forScope:nil];
+    }];
 }
 
 - (void) registerNotifications {
@@ -87,8 +104,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    Note *note = [[NotesManager datasource] noteAtIndex:indexPath.row];
     if (self.delegate) {
+        Note *note = [[NotesManager datasource] noteAtIndex:indexPath.row];
         [self.delegate notesTableViewController:self requestToEditNote:note];
     }
 }
@@ -120,13 +137,13 @@
     [self removeNoteIfEmpty:note];
 }
 
+/* Deprecated */
 - (void)notesEditViewController:(NotesEditViewController *)notesEditViewController
                 receivedNewNote:(Note *)newNote
                toReplaceOldNote:(Note *)oldNote {
     if (newNote == oldNote) {
         return;
     }
-    [self removeNoteIfEmpty:oldNote];
 }
 
 - (void)removeNoteIfEmpty:(Note *)note {
@@ -147,6 +164,14 @@
 }
 
 - (void)createNoteButtonFired:(UIBarButtonItem *)sender {
+    NSIndexPath *selectedPath = [self.tableView indexPathForSelectedRow];
+    if (selectedPath) {
+        Note *currentlySelected = [[NotesManager datasource] noteAtIndex:selectedPath.row];
+        if (currentlySelected && currentlySelected.title.length == 0 && currentlySelected.content.length == 0) {
+            return;
+        }
+    }
+    
     Note *newNote = [[NotesManager datasource] initializeNewNote];
     if ([[NotesManager datasource] insertNote:newNote] && self.delegate) {
         [self.delegate notesTableViewController:self requestToEditNote:newNote];
@@ -218,6 +243,7 @@
     if ([self.tableView numberOfRowsInSection:0] == 0) {
         return;
     }
+    
     [self.tableView beginUpdates];
     [self.tableView deleteRowsAtIndexPaths:@[[self indexPathForIndex:index]] withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];
@@ -225,6 +251,13 @@
 
 - (NSIndexPath *)indexPathForIndex:(NSUInteger) index {
     return [NSIndexPath indexPathForRow:index inSection:0];
+}
+
+#pragma mark - Search
+
+- (void)searchNotesWithText:(NSString *)text forScope:(NSString *)scope {
+    [[NotesManager datasource] loadNotesContainingText:text];
+    [self.tableView reloadData];
 }
 
 @end
