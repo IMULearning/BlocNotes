@@ -35,6 +35,11 @@
     }
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [MagicalRecord cleanUp];
+}
+
 - (BOOL)isContentValid {
     return YES;
 }
