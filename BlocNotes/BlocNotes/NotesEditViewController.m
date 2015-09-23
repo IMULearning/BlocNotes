@@ -11,17 +11,22 @@
 #import "NotesManager.h"
 #import <ReactiveCocoa.h>
 #import <Masonry.h>
+#import <BOString.h>
+#import "URLAwareMenuItem.h"
 
 #define TITLE_PLACEHOLDER NSLocalizedString(@"Title of this note", @"Title of this note")
 #define CONTENT_PLACEHOLDER NSLocalizedString(@"Write your note...", @"Write your note...")
 
-@interface NotesEditViewController () <UITextFieldDelegate, UITextViewDelegate>
+@interface NotesEditViewController () <UITextFieldDelegate, UITextViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UIView *separator;
 @property (nonatomic, strong) UITextView *contentTextView;
 @property (nonatomic, strong) UIBarButtonItem *doneButton;
 @property (nonatomic, strong) UIBarButtonItem *shareButton;
+@property (nonatomic, strong) NSDataDetector *detector;
+@property (nonatomic, strong) NSMutableArray *checkResults;
+@property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
 
 @end
 
@@ -37,6 +42,8 @@
     [self createUIControls];
     [self setupTextSignals];
     [self registerInitialAutoLayoutRules];
+    [self setupDataDetector];
+    [self setupGesture];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -62,6 +69,10 @@
     [[self.contentTextView.rac_textSignal throttle:0.2] subscribeNext:^(id x) {
         self.note.content = x;
         [[NotesManager datasource] updateNote:self.note];
+    }];
+    
+    [[self.contentTextView.rac_textSignal throttle:0.1] subscribeNext:^(id x) {
+        [self detectDataAndRenderText];
     }];
 }
 
@@ -101,6 +112,16 @@
         view.translatesAutoresizingMaskIntoConstraints = NO;
         [self.view addSubview:view];
     }
+}
+
+- (void)setupDataDetector {
+    self.detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypePhoneNumber|NSTextCheckingTypeLink error:nil];
+}
+
+- (void)setupGesture {
+    self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapFired:)];
+    self.tapRecognizer.delegate = self;
+    [self.contentTextView addGestureRecognizer:self.tapRecognizer];
 }
 
 #pragma mark - Auto layout
@@ -166,6 +187,95 @@
     _note = note;
     _titleTextField.text = _note.title;
     _contentTextView.text = _note.content;
+    
+    [self detectDataAndRenderText];
+}
+
+#pragma mark - Data Detection
+
+- (void)detectDataAndRenderText {
+    self.checkResults = [NSMutableArray array];
+    [self.detector enumerateMatchesInString:self.contentTextView.text
+                                    options:kNilOptions
+                                      range:NSMakeRange(0, self.contentTextView.text.length)
+                                 usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+                                     [self.checkResults addObject:result];
+    }];
+    
+    NSAttributedString *result = [self.contentTextView.text bos_makeString:^(BOStringMaker *make) {
+        make.font([UIFont systemFontOfSize:17]);
+        [self.checkResults enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSTextCheckingResult *result = obj;
+            make.with.range(result.range, ^{
+                make.foregroundColor([UIColor blueColor]);
+                make.underlineColor([UIColor blueColor]);
+                make.underlineStyle(@(NSUnderlineStyleSingle));
+            });
+        }];
+    }];
+ 
+    UITextRange *cursorPosition = self.contentTextView.selectedTextRange;
+    self.contentTextView.attributedText = result;
+    self.contentTextView.selectedTextRange = cursorPosition;
+}
+
+#pragma mark - Gesture
+
+- (void)tapFired:(UITapGestureRecognizer *)sender {
+    CGPoint position = [sender locationInView:self.contentTextView];
+    
+    position.y += self.contentTextView.contentOffset.y;
+    position.x += self.contentTextView.contentOffset.x;
+    
+    UITextPosition *tapPosition = [self.contentTextView closestPositionToPoint:position];
+    UITextRange *textRange = [self.contentTextView.tokenizer rangeEnclosingPosition:tapPosition withGranularity:UITextGranularitySentence inDirection:UITextLayoutDirectionRight];
+    
+    for (NSTextCheckingResult *result in self.checkResults) {
+        NSRange intersection = NSIntersectionRange(result.range, [self convertTextRange:textRange]);
+        if (intersection.length > 0) {
+            NSURL *urlToOpen;
+            NSString *menuTitle = @"Open";
+            if (result.resultType == NSTextCheckingTypeLink) {
+                urlToOpen = result.URL;
+                if ([result.URL.absoluteString rangeOfString:@"mailto:"].location != NSNotFound) {
+                    menuTitle = [@"Email " stringByAppendingString:[result.URL.absoluteString stringByReplacingOccurrencesOfString:@"mailto:" withString:@""]];
+                } else {
+                    menuTitle = [@"Visit " stringByAppendingString:result.URL.absoluteString];;
+                }
+            } else if (result.resultType == NSTextCheckingTypePhoneNumber) {
+                urlToOpen = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", result.phoneNumber]];
+                menuTitle = [@"Call " stringByAppendingString:result.phoneNumber];
+            }
+            
+            if (urlToOpen) {
+                URLAwareMenuItem *menuItem = [[URLAwareMenuItem alloc] initWithTitle:menuTitle action:@selector(openMenuUrl:)];
+                menuItem.URL = urlToOpen;
+                [[UIMenuController sharedMenuController] setMenuItems:@[menuItem]];
+            }
+            
+            break;
+        } else {
+            [[UIMenuController sharedMenuController] setMenuItems:@[]];
+        }
+    }
+}
+
+- (void)openMenuUrl:(UIMenuController *)sender {
+    URLAwareMenuItem *menuItem = (URLAwareMenuItem *)[sender.menuItems firstObject];
+    [[UIApplication sharedApplication] openURL:menuItem.URL];
+}
+
+- (NSRange)convertTextRange:(UITextRange *)textRange {
+    UITextPosition* beginning = self.contentTextView.beginningOfDocument;
+    UITextPosition* selectionStart = textRange.start;
+    UITextPosition* selectionEnd = textRange.end;
+    const NSInteger location = [self.contentTextView offsetFromPosition:beginning toPosition:selectionStart];
+    const NSInteger length = [self.contentTextView offsetFromPosition:selectionStart toPosition:selectionEnd];
+    return NSMakeRange(location, length);
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 @end

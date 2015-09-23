@@ -6,6 +6,7 @@ target 'BlocNotes' do
 	pod "MagicalRecord"	
 	pod 'ReactiveCocoa', '2.5'
     	pod 'Masonry'
+	pod 'BOString'
 end
 
 target 'BlocNotesShareExtension' do

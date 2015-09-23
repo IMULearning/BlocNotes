@@ -11,6 +11,7 @@
 		9A6E91C81BA9146800D41FC5 /* NotesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6E91C71BA9146800D41FC5 /* NotesTableViewController.m */; };
 		9A6E91CB1BA9147F00D41FC5 /* NotesEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6E91CA1BA9147F00D41FC5 /* NotesEditViewController.m */; };
 		9A6E91CE1BA914F000D41FC5 /* NotesStartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6E91CD1BA914F000D41FC5 /* NotesStartViewController.m */; };
+		9A98FC661BB2615800807E12 /* URLAwareMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A98FC651BB2615800807E12 /* URLAwareMenuItem.m */; settings = {ASSET_TAGS = (); }; };
 		9AF8E3591BB1304100020414 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF8E3581BB1304100020414 /* ShareViewController.m */; };
 		9AF8E35C1BB1304100020414 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9AF8E35A1BB1304100020414 /* MainInterface.storyboard */; };
 		9AF8E3601BB1304100020414 /* BlocNotesShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9AF8E3551BB1304100020414 /* BlocNotesShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -82,6 +83,8 @@
 		9A6E91CA1BA9147F00D41FC5 /* NotesEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesEditViewController.m; sourceTree = "<group>"; };
 		9A6E91CC1BA914F000D41FC5 /* NotesStartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesStartViewController.h; sourceTree = "<group>"; };
 		9A6E91CD1BA914F000D41FC5 /* NotesStartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesStartViewController.m; sourceTree = "<group>"; };
+		9A98FC641BB2615800807E12 /* URLAwareMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLAwareMenuItem.h; sourceTree = "<group>"; };
+		9A98FC651BB2615800807E12 /* URLAwareMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLAwareMenuItem.m; sourceTree = "<group>"; };
 		9AF8E3501BB12E4300020414 /* BlocNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BlocNotes.entitlements; sourceTree = "<group>"; };
 		9AF8E3551BB1304100020414 /* BlocNotesShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BlocNotesShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AF8E3571BB1304100020414 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
@@ -301,6 +304,8 @@
 			children = (
 				9AFB64C01BA73ED70017D5F2 /* NotesTableViewCell.h */,
 				9AFB64C11BA73ED70017D5F2 /* NotesTableViewCell.m */,
+				9A98FC641BB2615800807E12 /* URLAwareMenuItem.h */,
+				9A98FC651BB2615800807E12 /* URLAwareMenuItem.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -542,6 +547,7 @@
 				9AFB64C21BA73ED70017D5F2 /* NotesTableViewCell.m in Sources */,
 				9A6E91CB1BA9147F00D41FC5 /* NotesEditViewController.m in Sources */,
 				9AFB64AF1BA71E550017D5F2 /* Note.m in Sources */,
+				9A98FC661BB2615800807E12 /* URLAwareMenuItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
