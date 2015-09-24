@@ -21,11 +21,8 @@
 @implementation AppDelegate
 
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    NSURL *containerDirectory = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.com.kumiq.BlocNotes"];
-    NSURL *databaseFileURL = [containerDirectory URLByAppendingPathComponent:kMagicalRecordDefaultStoreFileName];
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:databaseFileURL];
-    [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [NotesManager datasource];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
@@ -56,7 +53,7 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    [MagicalRecord cleanUp];
+
 }
 
 #pragma mark - View Initialization

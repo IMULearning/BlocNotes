@@ -83,6 +83,10 @@
     [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_DID_REMOVE object:nil] subscribeNext:^(id x) {
         [self didReceiveNotificationOnNoteRemoval:x];
     }];
+    
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil] subscribeNext:^(id x) {
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)selectFirstItem {

@@ -35,8 +35,8 @@
     
     [self setupNavigationBar];
     [self createUIControls];
-    [self setupTextSignals];
     [self registerInitialAutoLayoutRules];
+    [self setupTextSignals];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -55,6 +55,9 @@
 
 - (void)setupTextSignals {
     [[self.titleTextField.rac_textSignal throttle:0.2] subscribeNext:^(id x) {
+        if (!self.note.title) {
+            self.note.title = @"";
+        }
         self.note.title = x;
         [[NotesManager datasource] updateNote:self.note];
     }];

@@ -9,6 +9,8 @@
 #import "CoreDataDatasource.h"
 #import "NotificationNames.h"
 #import <MagicalRecord.h>
+#import <ReactiveCocoa.h>
+#import "CoreDataController.h"
 
 @interface CoreDataDatasource ()
 
@@ -35,31 +37,74 @@
     self = [super init];
     if (self) {
         [self reloadCache];
+        
+//        NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+//        [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:nil] subscribeNext:^(id x) {
+//            NSLog(@"Receive iCloud Update: %@", ((NSNotification *)x).userInfo);
+//            [context mergeChangesFromContextDidSaveNotification:x];
+//            [self reloadCache];
+//            [self.cache enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                NSLog(@"Title: %@", ((Note *) obj).title);
+//            }];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
+//        }];
+
+        
+//        [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:nil] subscribeNext:^(id x) {
+//            NSLog(@"Receive iCloud Update: %@", ((NSNotification *)x).userInfo);
+//            
+////            [self reloadCache];
+////            [self.cache enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+////                NSLog(@"Title: %@", ((Note *)obj).title);
+////            }];
+////            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
+//            
+//            [[NSManagedObjectContext MR_defaultContext] mergeChangesFromContextDidSaveNotification:x];
+//            [self reloadCache];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
+//        }];
+        
+//        NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+//        [[NSNotificationCenter defaultCenter] addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:context.persistentStoreCoordinator queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+//            
+//            NSLog(@"Receive iCloud Update: %@", ((NSNotification *)note).userInfo);
+//            [context performBlock:^{
+//                [context mergeChangesFromContextDidSaveNotification:note];
+//                [self reloadCache];
+//                [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
+//            }];
+//        }];
     }
     return self;
 }
 
 - (void)reloadCache {
-    if (!self.filter || self.filter.length == 0) {
-        self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime)) ascending:YES];
-    } else {
+    NSError *error = nil;
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Note"];
+    NSSortDescriptor *sortByCreatedTime = [NSSortDescriptor sortDescriptorWithKey:NSStringFromSelector(@selector(createdTime))
+                                                                        ascending:YES];
+    [request setSortDescriptors:@[sortByCreatedTime]];
+    
+    if (self.filter.length > 0) {
         NSString *titleFilter = [NSString stringWithFormat:@"(title like \"*%@*\")", self.filter];
         NSString *contentFilter = [NSString stringWithFormat:@"(content like \"*%@*\")", self.filter];
+        NSString *allFilter = [NSString stringWithFormat:@"%@ OR %@", titleFilter, contentFilter];
+        NSPredicate *titlePredicate = [NSPredicate predicateWithFormat:titleFilter];
+        NSPredicate *contentPredicate = [NSPredicate predicateWithFormat:contentFilter];
+        NSPredicate *allPredicate = [NSPredicate predicateWithFormat:allFilter];
         
         if ([self.scope isEqualToString:@"Title"]) {
-            self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
-                                        ascending:YES
-                                    withPredicate:[NSPredicate predicateWithFormat:titleFilter]];
+            [request setPredicate:titlePredicate];
         } else if ([self.scope isEqualToString:@"Content"]) {
-            self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
-                                        ascending:YES
-                                    withPredicate:[NSPredicate predicateWithFormat:contentFilter]];
+            [request setPredicate:contentPredicate];
         } else {
-            NSString *allFilter = [NSString stringWithFormat:@"%@ OR %@", titleFilter, contentFilter];
-            self.cache = [Note MR_findAllSortedBy:NSStringFromSelector(@selector(createdTime))
-                                        ascending:YES
-                                    withPredicate:[NSPredicate predicateWithFormat:allFilter]];
+            [request setPredicate:allPredicate];
         }
+    }
+    
+    self.cache = [[CoreDataController controller].managedObjectContext executeFetchRequest:request error:&error];
+    if (error) {
+        NSLog(@"Error loading cache! %@, %@", [error localizedDescription], [error userInfo]);
     }
 }
 
@@ -76,40 +121,42 @@
 }
 
 - (Note *)initializeNewNote {
-    Note *newNote = [Note MR_createEntity];
+    Note *newNote = [NSEntityDescription insertNewObjectForEntityForName:@"Note"
+                                                  inManagedObjectContext:[CoreDataController controller].managedObjectContext];
     newNote.createdTime = [NSDate date];
     return newNote;
 }
 
 - (BOOL)insertNote:(Note *)newNote {
-    [newNote.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
-        [self reloadCache];
-        [self sendNotificationWithName:DATASOURCE_DID_INSERT userInfo:[self dictionaryForEventNote:newNote]];
-    }];
+    NSError *error = nil;
+    if ([[CoreDataController controller].managedObjectContext save:&error] == NO) {
+        NSAssert(NO, @"Error saving context: %@\n%@", [error localizedDescription], [error userInfo]);
+    }
+    [self reloadCache];
+    [self sendNotificationWithName:DATASOURCE_DID_INSERT userInfo:[self dictionaryForEventNote:newNote]];
     
     return YES;
 }
 
 - (BOOL)updateNote:(Note *)noteToUpdate {
-    [noteToUpdate.managedObjectContext MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
-        [self sendNotificationWithName:DATASOURCE_DID_UPDATE userInfo:[self dictionaryForEventNote:noteToUpdate]];
-    }];
+    NSError *error = nil;
+    if ([noteToUpdate.managedObjectContext save:&error] == NO) {
+        NSAssert(NO, @"Error saving context: %@\n%@", [error localizedDescription], [error userInfo]);
+    }
+    [self sendNotificationWithName:DATASOURCE_DID_UPDATE userInfo:[self dictionaryForEventNote:noteToUpdate]];
     
     return YES;
 }
 
 - (BOOL)removeNote:(Note *)noteToRemove {
-    if ([self indexForNote:noteToRemove] == NSNotFound) {
-        return NO;
-    }
+    [[CoreDataController controller].managedObjectContext deleteObject:noteToRemove];
+    [[CoreDataController controller].managedObjectContext save:nil];
     
-    NSDictionary *eventUserInfo = [self dictionaryForEventNote:noteToRemove];
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        Note *note = [noteToRemove MR_inContext:localContext];
-        [note MR_deleteEntity];
-    }];
-    [self reloadCache];
-    [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
+    if ([self indexForNote:noteToRemove] != NSNotFound) {
+        NSDictionary *eventUserInfo = [self dictionaryForEventNote:noteToRemove];
+        [self reloadCache];
+        [self sendNotificationWithName:DATASOURCE_DID_REMOVE userInfo:eventUserInfo];
+    }
     
     return YES;
 }
@@ -133,7 +180,8 @@
 
 - (void)setCache:(NSArray *)cache {
     _cache = cache;
-    if ([Note MR_countOfEntities] == 0) {
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Note"];
+    if ([[CoreDataController controller].managedObjectContext countForFetchRequest:request error:nil] == 0) {
         [self sendNotificationWithName:DATASOURCE_IS_EMPTY userInfo:nil];
     } else if (_cache.count == 0) {
         [self sendNotificationWithName:DATASOURCE_CACHE_IS_EMPTY userInfo:nil];

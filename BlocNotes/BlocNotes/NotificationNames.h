@@ -16,5 +16,6 @@
 #define DATASOURCE_DID_INSERT @"DatasourceDidInsertNoteNotification"
 #define DATASOURCE_DID_UPDATE @"DatasourceDidUpdateNoteNotification"
 #define DATASOURCE_DID_REMOVE @"DatasourceDidRemoveNoteNotification"
+#define DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE @"DatasourceDidReceiveICloudUpdateNotification"
 
 #endif /* NotificationNames_h */
