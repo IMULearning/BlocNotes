@@ -235,6 +235,8 @@
 #pragma mark - Table view cells CRUD
 
 - (void)insertTableRowForNote:(Note *)note atIndex:(NSUInteger)index {
+    NSLog(@"%ld", [[NotesManager datasource] countNotes]);
+    NSLog(@"%ld", [self.tableView numberOfRowsInSection:0]);
     [self.tableView beginUpdates];
     [self.tableView insertRowsAtIndexPaths:@[[self indexPathForIndex:index]] withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView endUpdates];

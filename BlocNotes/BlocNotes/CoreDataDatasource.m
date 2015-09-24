@@ -37,43 +37,11 @@
     self = [super init];
     if (self) {
         [self reloadCache];
-        
-//        NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-//        [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:nil] subscribeNext:^(id x) {
-//            NSLog(@"Receive iCloud Update: %@", ((NSNotification *)x).userInfo);
-//            [context mergeChangesFromContextDidSaveNotification:x];
-//            [self reloadCache];
-//            [self.cache enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//                NSLog(@"Title: %@", ((Note *) obj).title);
-//            }];
-//            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
-//        }];
 
-        
-//        [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:nil] subscribeNext:^(id x) {
-//            NSLog(@"Receive iCloud Update: %@", ((NSNotification *)x).userInfo);
-//            
-////            [self reloadCache];
-////            [self.cache enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-////                NSLog(@"Title: %@", ((Note *)obj).title);
-////            }];
-////            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
-//            
-//            [[NSManagedObjectContext MR_defaultContext] mergeChangesFromContextDidSaveNotification:x];
-//            [self reloadCache];
-//            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
-//        }];
-        
-//        NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-//        [[NSNotificationCenter defaultCenter] addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:context.persistentStoreCoordinator queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-//            
-//            NSLog(@"Receive iCloud Update: %@", ((NSNotification *)note).userInfo);
-//            [context performBlock:^{
-//                [context mergeChangesFromContextDidSaveNotification:note];
-//                [self reloadCache];
-//                [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
-//            }];
-//        }];
+        [[[NSNotificationCenter defaultCenter] rac_addObserverForName:MANAGED_CONTEXT_DID_RECEIVE_ICLOUD_CHANGES object:nil] subscribeNext:^(id x) {
+            [self reloadCache];
+            [[NSNotificationCenter defaultCenter] postNotificationName:DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE object:nil];
+        }];
     }
     return self;
 }
@@ -106,6 +74,10 @@
     if (error) {
         NSLog(@"Error loading cache! %@, %@", [error localizedDescription], [error userInfo]);
     }
+    
+    [self.cache enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSLog(@"Cache entry: %@", [obj valueForKey:@"title"]);
+    }];
 }
 
 - (NSArray *)loadAllNotes {

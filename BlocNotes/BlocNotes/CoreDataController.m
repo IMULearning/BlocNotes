@@ -7,16 +7,21 @@
 //
 
 #import "CoreDataController.h"
+#import <ReactiveCocoa.h>
+#import "NotificationNames.h"
 
 NSString * const kBlocNotesApplicationGroupName = @"group.com.kumiq.BlocNotes";
 NSString * const kBlocNotesDataStoreFileName = @"BlocNotesDataStore.sqlite";
 NSString * const kBlocNotesModelResourceName = @"BlocNotes";
+NSString * const kBlocNotesUbiquityIdentityTokenName = @"com.kumiq.BlocNotes.UbiquityIdentityToken";
+NSString * const kBlocNotesiCloudContainerID = @"iCloud.com.kumiq.BlocNotes";
 
 @interface CoreDataController ()
 
 @property (nonatomic, strong) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, strong) NSPersistentStoreCoordinator *persistenceStoreCoordinator;
 
+@property (nonatomic, strong) NSTimer *mergedEventTimer;
 @end
 
 @implementation CoreDataController
@@ -38,6 +43,7 @@ NSString * const kBlocNotesModelResourceName = @"BlocNotes";
     self = [super init];
     if (self) {
         [self setupCoreData];
+        [self setupiCloud];
     }
     return self;
 }
@@ -89,6 +95,7 @@ NSString * const kBlocNotesModelResourceName = @"BlocNotes";
     NSMutableDictionary *bootstrap = [@{} mutableCopy];
     [bootstrap addEntriesFromDictionary:[self sqlLiteOptions]];
     [bootstrap addEntriesFromDictionary:[self autoMigratingOptions]];
+    [bootstrap addEntriesFromDictionary:[self iCloudOptions]];
     return bootstrap;
 }
 
@@ -104,5 +111,79 @@ NSString * const kBlocNotesModelResourceName = @"BlocNotes";
              NSInferMappingModelAutomaticallyOption: [NSNumber numberWithBool:YES]
              };
 }
+
+- (NSDictionary *) iCloudOptions {
+    return @{NSPersistentStoreUbiquitousContentNameKey: @"BlocNotesCloudStore"};
+}
+
+#pragma mark - Setup iCloud
+
+- (void) setupiCloud {
+    [self archivingiCloudToken];
+    [self registerForPersistentStoreCoordinatorStoresWillChangeNotification];
+    [self registerForPersistentStoreCoordinatorStoreChangedNotification];
+    [self registerForiCloudAvailabilityNotification];
+    [self registerForPersistentStoreDidImportContentChangeNotification];
+}
+
+- (void) registerForPersistentStoreDidImportContentChangeNotification {
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:nil] subscribeNext:^(id x) {
+        NSLog(@"Did import change!");
+        [self.managedObjectContext mergeChangesFromContextDidSaveNotification:x];
+        if (self.mergedEventTimer != nil) {
+            [self.mergedEventTimer invalidate];
+            self.mergedEventTimer = nil;
+        }
+        self.mergedEventTimer = [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(sendContextMergedNotification) userInfo:nil repeats:NO];
+        [[NSRunLoop mainRunLoop] addTimer:self.mergedEventTimer forMode:NSDefaultRunLoopMode];
+    }];
+}
+
+- (void) sendContextMergedNotification {
+    [self.mergedEventTimer invalidate];
+    self.mergedEventTimer = nil;
+    NSLog(@"Did fire change event!");
+    [[NSNotificationCenter defaultCenter] postNotificationName:MANAGED_CONTEXT_DID_RECEIVE_ICLOUD_CHANGES object:nil];
+}
+
+- (void) registerForPersistentStoreCoordinatorStoresWillChangeNotification {
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreCoordinatorStoresWillChangeNotification object:nil] subscribeNext:^(id x) {
+        NSLog(@"Persistent Store Coordinator Store will changed");
+        [self.managedObjectContext performBlock:^{
+            if ([self.managedObjectContext hasChanges]) {
+                [self.managedObjectContext save:nil];
+            } else {
+                [self.managedObjectContext reset];
+            }
+        }];
+    }];
+}
+
+- (void) registerForPersistentStoreCoordinatorStoreChangedNotification {
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSPersistentStoreCoordinatorStoresDidChangeNotification object:nil] subscribeNext:^(id x) {
+        NSLog(@"Persistent Store Coordinator Store changed.");
+    }];
+}
+
+- (void) registerForiCloudAvailabilityNotification {
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:NSUbiquityIdentityDidChangeNotification object:nil] subscribeNext:^(id x) {
+        NSLog(@"iCloud availability changed: \n%@\n", x);
+    }];
+}
+
+- (void) archivingiCloudToken {
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    id currentiCloudToken = fileManager.ubiquityIdentityToken;
+    NSLog(@"Ubuquity Token: %@", currentiCloudToken);
+    if (currentiCloudToken) {
+        NSData *newTokenData = [NSKeyedArchiver archivedDataWithRootObject: currentiCloudToken];
+        [[NSUserDefaults standardUserDefaults] setObject: newTokenData
+                                                  forKey: kBlocNotesUbiquityIdentityTokenName];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey: kBlocNotesUbiquityIdentityTokenName];
+    }
+}
+
+// TODO register NSUbiquityIdentityDidChangeNotification for iCloud availability
 
 @end

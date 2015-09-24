@@ -12,6 +12,8 @@
 extern NSString * const kBlocNotesApplicationGroupName;
 extern NSString * const kBlocNotesDataStoreFileName;
 extern NSString * const kBlocNotesModelResourceName;
+extern NSString * const kBlocNotesUbiquityIdentityTokenName;
+extern NSString * const kBlocNotesiCloudContainerID;
 
 @interface CoreDataController : NSObject
 

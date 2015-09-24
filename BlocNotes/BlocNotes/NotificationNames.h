@@ -17,5 +17,6 @@
 #define DATASOURCE_DID_UPDATE @"DatasourceDidUpdateNoteNotification"
 #define DATASOURCE_DID_REMOVE @"DatasourceDidRemoveNoteNotification"
 #define DATASOURCE_DID_RECEIVE_ICLOUD_UPDATE @"DatasourceDidReceiveICloudUpdateNotification"
+#define MANAGED_CONTEXT_DID_RECEIVE_ICLOUD_CHANGES @"ManagedContextDidReceiveICloudChangesNotification"
 
 #endif /* NotificationNames_h */
