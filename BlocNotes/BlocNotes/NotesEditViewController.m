@@ -243,7 +243,7 @@
                     menuTitle = [@"Visit " stringByAppendingString:result.URL.absoluteString];;
                 }
             } else if (result.resultType == NSTextCheckingTypePhoneNumber) {
-                urlToOpen = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", result.phoneNumber]];
+                urlToOpen = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", [result.phoneNumber stringByReplacingOccurrencesOfString:@" " withString:@""]]];
                 menuTitle = [@"Call " stringByAppendingString:result.phoneNumber];
             }
             
@@ -251,9 +251,8 @@
                 URLAwareMenuItem *menuItem = [[URLAwareMenuItem alloc] initWithTitle:menuTitle action:@selector(openMenuUrl:)];
                 menuItem.URL = urlToOpen;
                 [[UIMenuController sharedMenuController] setMenuItems:@[menuItem]];
+                break;
             }
-            
-            break;
         } else {
             [[UIMenuController sharedMenuController] setMenuItems:@[]];
         }
